@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>AppIntel | Locked sample - lovelee couples: love note app</title>
+<script>try{var v=localStorage.getItem('appintel-theme');if(v==='light'||v==='dark'){document.documentElement.setAttribute('data-theme',v);}}catch(e){}
+</script>
+<style>:root {
+    /* Warm paper ground with slate ink and a basil-green identity hue:
+       editorial, kitchen-warm, not the default admin gray. */
+    --bg: #f7f6f3; --surface: #ffffff; --surface-2: #f3f2ee;
+    --text: #1c2333; --muted: #5d6779; --border: #e6e4de;
+    --accent: #467a10; --accent-strong: #38620b; --accent-soft: #467a1012;
+    --positive: #047857; --positive-soft: #04785714;
+    --danger: #dc2626; --danger-soft: #dc262610;
+    --warn: #b45309; --warn-soft: #b4530914;
+    --cat-pos: #059669; --cat-neg: #e11d48; --cat-req: #d97706;
+    --shadow: 0 1px 2px #1c233314, 0 6px 16px -10px #1c23331f;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #467a1016, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #b453090f, transparent 55%);
+}
+:root[data-theme="dark"] {
+    /* Blue-black slate ground; elevation is explicit (surface > surface-2),
+       never an inversion of light. Identity hue = basil green (food-native),
+       status hues only ever encode state. */
+    --bg: #0b101d; --surface: #121828; --surface-2: #1a2236;
+    --text: #e8ebf5; --muted: #97a1b7; --border: #232d45;
+    --accent: #a3c76d; --accent-strong: #84cc16; --accent-soft: #65a30d2e;
+    --positive: #34d399; --positive-soft: #10b98124;
+    --danger: #fb7185; --danger-soft: #f43f5e24;
+    --warn: #fbbf24; --warn-soft: #f59e0b24;
+    --cat-pos: #34d399; --cat-neg: #fb7185; --cat-req: #fbbf24;
+    --shadow: 0 1px 2px #00000066, 0 8px 18px -12px #0000008c;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #4d7c0f3a, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #84cc161f, transparent 55%);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    /* Blue-black slate ground; elevation is explicit (surface > surface-2),
+       never an inversion of light. Identity hue = basil green (food-native),
+       status hues only ever encode state. */
+    --bg: #0b101d; --surface: #121828; --surface-2: #1a2236;
+    --text: #e8ebf5; --muted: #97a1b7; --border: #232d45;
+    --accent: #a3c76d; --accent-strong: #84cc16; --accent-soft: #65a30d2e;
+    --positive: #34d399; --positive-soft: #10b98124;
+    --danger: #fb7185; --danger-soft: #f43f5e24;
+    --warn: #fbbf24; --warn-soft: #f59e0b24;
+    --cat-pos: #34d399; --cat-neg: #fb7185; --cat-req: #fbbf24;
+    --shadow: 0 1px 2px #00000066, 0 8px 18px -12px #0000008c;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #4d7c0f3a, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #84cc161f, transparent 55%);
+} }
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter,
+               "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  font-size: 15px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  transition: background .25s ease, color .25s ease;
+}
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- nav ---------- */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner { display: flex; align-items: center; gap: 18px; height: 56px; }
+.brand { font-weight: 700; letter-spacing: -.02em; font-size: 15px; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; flex: 1; overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  color: var(--muted); font-size: 13px; font-weight: 500;
+  padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface-2); text-decoration: none; }
+#themeBtn {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  min-height: 34px; min-width: 34px; justify-content: center;
+}
+#themeBtn:hover { border-color: var(--accent); }
+#themeBtn svg { flex: none; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--hero-grad); border-bottom: 1px solid var(--border); }
+.hero-inner { padding: 46px 24px 34px; }
+h1 { font-size: 30px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
+.hero-meta { color: var(--muted); margin-top: 8px; font-size: 13.5px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; margin-top: 26px; }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.kpi b { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.kpi span { color: var(--muted); font-size: 12px; font-weight: 500; }
+
+/* ---------- "this week vs last run" box (under KPI strip) ---------- */
+.diffbox {
+  margin-top: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+}
+.diffbox.flat {
+  color: var(--muted); font-size: 13px; gap: 9px; align-items: center;
+}
+.diffbox.flat b { color: var(--text); }
+.diff-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.diff-title {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); cursor: help; white-space: nowrap;
+}
+.diff-sum { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.diff-sum b { font-size: 15px; font-weight: 800; }
+.diff-sum .c-new { color: var(--accent); }
+.diff-sum .c-pers { color: var(--warn); }
+.diff-sum .c-res { color: var(--positive); }
+.diff-sum .sep { margin: 0 7px; opacity: .55; }
+.diff-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.d-chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+  font-weight: 600; color: var(--text); cursor: help; max-width: 100%;
+}
+.d-chip i { font-style: normal; color: var(--muted); font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.d-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.d-chip.new::before { background: var(--accent); }
+.d-chip.pers::before { background: var(--warn); }
+.d-chip.res::before { background: var(--positive); }
+.d-chip.more { color: var(--muted); cursor: default; }
+.d-chip.more::before { display: none; }
+
+/* ---------- thin-sample flag ---------- */
+.chip.thin-chip {
+  color: var(--warn); background: var(--warn-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--warn) 38%, var(--border));
+}
+.thin-note {
+  font-size: 12.5px; color: var(--muted); background: var(--warn-soft);
+  border-radius: 9px; padding: 8px 12px; margin: 2px 0 14px;
+}
+.thin-note b { color: var(--warn); }
+
+/* ---------- momentum strip (store metadata) ---------- */
+.momentum { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip.mv { font-size: 12px; padding: 3px 9px; }
+.chip.mv.up { color: var(--positive); background: var(--positive-soft);
+  border-color: color-mix(in srgb, var(--positive) 30%, var(--border)); }
+
+/* ---------- version quality block ---------- */
+.vblock { margin-top: 12px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface-2); padding: 12px 13px; }
+.vb-head { display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  margin-bottom: 8px; }
+.vtable table { width: 100%; max-width: 460px; min-width: 0; border-collapse: collapse; font-size: 12.5px; }
+.vtable th, .vtable td { padding: 5px 8px; border-top: 1px solid var(--border); text-align: left; }
+.vtable th:nth-child(n+2), .vtable td:nth-child(n+2) { text-align: right; }
+.vtable thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); border-top: 0; background: transparent; }
+.vtable tr.latest td { background: var(--accent-soft); }
+.lat { font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--accent);
+  vertical-align: 1px; }
+.chip.v-reg { color: var(--danger); background: var(--danger-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--danger) 38%, var(--border)); }
+.chip.v-imp { color: var(--positive); background: var(--positive-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--positive) 30%, var(--border)); }
+.chip.v-stable { color: var(--muted); cursor: help; }
+.chip.v-low { color: var(--muted); font-style: italic; cursor: help; }
+.v-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+/* ---------- community demand ---------- */
+.demand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.d-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.d-card .f-row { align-items: center; }
+.chip.dtype { font-size: 11px; font-weight: 800; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--muted); }
+.d-meta { font-size: 12px; color: var(--muted); margin-top: 7px; cursor: help; }
+.chip.src { font-size: 11px; padding: 1px 8px; margin-left: 6px;
+  background: var(--surface-2); text-transform: uppercase; letter-spacing: .05em; }
+.d-desc { font-size: 13px; color: var(--text); margin-top: 6px; }
+.d-apps { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; align-items: center; }
+.chip.d-app { font-size: 12px; padding: 2px 9px; color: var(--accent);
+  background: var(--accent-soft); border-color: transparent; }
+.d-noapp { font-size: 11.5px; color: var(--muted); font-style: italic; }
+/* provenance: clickable chips that open the ACTUAL cited community posts */
+.d-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.d-links .lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+a.d-lnk { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px;
+  font-weight: 600; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease; }
+a.d-lnk:hover { color: var(--accent); text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+a.d-lnk svg { flex: none; opacity: .7; }
+
+/* ---------- sections ---------- */
+section { padding: 42px 0 8px; scroll-margin-top: 64px; }
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+.sec-head h2 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
+.sec-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; max-width: 780px; }
+.sec-sub b { color: var(--text); }
+
+/* ---------- app cards + icons ---------- */
+.app-head { display: flex; align-items: center; gap: 12px; }
+.app-icon-wrap { position: relative; width: 44px; height: 44px; flex: none; }
+.app-icon-wrap .app-icon { position: absolute; inset: 0; width: 100%; height: 100%; }
+.app-icon {
+  width: 44px; height: 44px; border-radius: 12px; object-fit: cover; background: var(--surface-2);
+  border: 1px solid var(--border); flex: none; display: block;
+}
+img.app-icon { z-index: 1; }
+.app-icon.avatar {
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .02em; border: 0;
+}
+.app-title { font-weight: 700; font-size: 15.5px; letter-spacing: -.01em; }
+.app-sub { color: var(--muted); font-size: 12.5px; }
+.badge-own {
+  font-size: 11px; font-weight: 800; letter-spacing: .09em; color: var(--accent);
+  background: var(--accent-soft); border-radius: 6px; padding: 3px 7px; margin-left: auto;
+}
+.app-stats { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+.app-stats b { color: var(--text); font-weight: 700; }
+.stars { color: var(--warn); letter-spacing: 1px; }
+/* store listings: slim chips linking each app to its Play / App Store page */
+.store-links { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 10px; }
+.app-head + .app-stats + .store-links { margin-top: 9px; }
+a.store-lnk { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px;
+  font-weight: 700; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease; }
+a.store-lnk:hover { color: var(--accent); text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--accent-soft); }
+a.store-lnk svg { flex: none; opacity: .8; }
+
+/* ---------- finding blocks ---------- */
+.cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.cat-block {
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 15px;
+  background: var(--surface-2);
+}
+/* inside the tinted block the quote needs the inverse surface to read as a chip */
+.cat-block .quote { background: var(--surface); }
+.cat-head {
+  display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 9px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot.pos { background: var(--positive); } .dot.neg { background: var(--danger); }
+.dot.req { background: var(--warn); }
+.finding { padding: 8px 0; border-top: 1px solid var(--border); }
+.finding:first-of-type { border-top: 0; padding-top: 2px; }
+/* competitor cat blocks match the spotlight rhythm */
+.cats .finding { padding: 10px 0; }
+.cats .f-label { font-size: 14px; }
+.f-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.f-label { font-weight: 600; font-size: 13.5px; flex: 1; min-width: 120px; }
+.f-mentions { color: var(--muted); font-size: 12px; white-space: nowrap; cursor: help; }
+.pill {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+}
+.pill.persistent { color: var(--accent); background: var(--accent-soft); }
+.pill.hot { color: var(--danger); background: var(--danger-soft); }
+.meter { height: 3px; border-radius: 2px; background: var(--surface); overflow: hidden; margin-top: 5px; }
+.meter i { display: block; height: 100%; border-radius: 2px; }
+.meter i.pos { background: var(--cat-pos); }
+.meter i.neg { background: var(--cat-neg); }
+.meter i.req { background: var(--cat-req); }
+.quote {
+  margin-top: 6px; font-size: 12.5px; color: var(--muted); font-style: italic;
+  background: var(--surface-2); border-radius: 8px; padding: 7px 10px;
+}
+.empty { color: var(--muted); font-size: 12.5px; font-style: italic; padding: 4px 0 2px; }
+
+/* ---------- spotlight quadrants ---------- */
+.quad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.quad {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px; box-shadow: var(--shadow);
+}
+.quad .cat-head { font-size: 12.5px; margin-bottom: 12px; }
+.quad .finding { padding: 10px 0; }
+.quad .f-label { font-size: 14px; }
+
+/* ---------- matrix ---------- */
+.table-wrap {
+  overflow-x: auto; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--surface); box-shadow: var(--shadow); -webkit-overflow-scrolling: touch;
+  padding: 6px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.table-wrap::-webkit-scrollbar { height: 8px; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 680px; }
+th, td { padding: 11px 14px; text-align: left; border-top: 1px solid var(--border); }
+thead th {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+  border-top: 0; background: var(--surface-2); font-weight: 700;
+}
+td.feat { font-weight: 600; max-width: 300px; }
+.mk { font-weight: 700; font-size: 13px; }
+.mk.yes { color: var(--positive); } .mk.no { color: var(--muted); font-weight: 500; }
+.mk.part { color: var(--warn); }
+tr.opp td.own { background: var(--danger-soft); }
+tr.opp td.own.mk.no { color: var(--danger); font-weight: 800; }
+th.own { color: var(--text); }
+.opp-tag { font-size: 11px; font-weight: 800; color: var(--danger); letter-spacing: .05em; }
+
+/* ---------- chips ---------- */
+.chip {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  border: 1px solid var(--border); background: var(--surface);
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+
+/* ---------- strategy ---------- */
+.feat-row {
+  display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 15px 17px; box-shadow: var(--shadow); margin-bottom: 11px;
+}
+.prio { text-align: center; }
+.prio b { font-size: 19px; font-weight: 800; color: var(--accent); display: block; line-height: 1.1; }
+.prio span { font-size: 11px; font-weight: 700; letter-spacing: .09em; color: var(--muted); }
+.feat-row h4 { font-size: 14.5px; font-weight: 700; letter-spacing: -.01em; }
+.feat-row p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.f-ev { font-size: 12px; color: var(--muted); margin-top: 7px; }
+.tag-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; letter-spacing: .03em; }
+.tag.high { color: var(--positive); background: var(--positive-soft); }
+.tag.med  { color: var(--warn); background: var(--warn-soft); }
+.tag.low  { color: var(--muted); background: var(--surface-2); }
+.positioning {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-radius: 16px;
+  padding: 18px 20px; box-shadow: var(--shadow); font-size: 14.5px; line-height: 1.6;
+  margin-bottom: 22px;
+}
+.positioning h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
+
+details.competitor { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+details.competitor > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px; font-weight: 700; font-size: 15px; min-height: 52px;
+}
+details.competitor > summary::-webkit-details-marker { display: none; }
+details.competitor > summary .app-icon-wrap { width: 38px; height: 38px; }
+details.competitor > summary .app-icon { border-radius: 10px; font-size: 13px; }
+details.competitor > summary .chev { margin-left: auto; color: var(--muted); transition: transform .2s; flex: none; }
+details.competitor > summary:focus-visible { outline-offset: -2px; }
+details.competitor[open] > summary .chev { transform: rotate(90deg); }
+details.competitor > .body { padding: 4px 18px 18px; border-top: 1px solid var(--border); }
+
+footer { margin-top: 52px; border-top: 1px solid var(--border); padding: 26px 0 40px; color: var(--muted); font-size: 12.5px; }
+footer b { color: var(--text); }
+.f-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  .nav-inner { gap: 10px; height: 52px; }
+  .hero-inner { padding: 30px 16px 24px; }
+  h1 { font-size: 25px; }
+  .hero-meta { font-size: 12px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 18px; }
+  .kpi { padding: 11px 12px; border-radius: 12px; }
+  .kpi b { font-size: 17px; }
+  .kpi span { font-size: 12px; }
+  .diffbox { padding: 11px 13px; border-radius: 12px; gap: 6px 12px; }
+  .diff-sum { white-space: normal; }
+  .diff-sum .sep { margin: 0 5px; }
+  .d-chip { font-size: 12px; max-width: 100%; }
+  .d-chip i { max-width: 130px; }
+  .thin-note { font-size: 12px; }
+  section { padding: 30px 0 6px; }
+  .sec-head h2 { font-size: 18px; }
+  .sec-sub { font-size: 12.5px; margin-bottom: 16px; }
+  .cats, .quad-grid { grid-template-columns: 1fr; }
+  .quad { padding: 14px; }
+  .feat-row { grid-template-columns: 52px 1fr; gap: 12px; }
+  .feat-row .tag-row { grid-column: 1 / -1; }
+  .momentum { gap: 5px; }
+  .chip.mv { font-size: 12px; padding: 2px 8px; }
+  .vblock { padding: 10px 11px; }
+  .vtable th, .vtable td { padding: 4px 6px; }
+  .demand-grid { grid-template-columns: 1fr; gap: 10px; }
+  .d-card { padding: 12px 13px; }
+  .d-card .f-label { font-size: 13px; }
+}
+@media (max-width: 460px) {
+  .brand { font-size: 13px; }
+  .nav-links a { padding: 5px 8px; font-size: 12px; }
+  #themeBtn { padding: 5px 10px; font-size: 11.5px; }
+  details.competitor > summary { padding: 13px 14px; font-size: 14px; gap: 10px; }
+  details.competitor > .body { padding: 4px 14px 14px; }
+  .app-icon-wrap { width: 38px; height: 38px; }
+  .app-icon.avatar { font-size: 13px; }
+  .f-label { font-size: 13px; }
+  .feat-row { padding: 12px 13px; }
+  th, td { padding: 9px 10px; }
+}
+</style>
+<style>
+/* ---------------- teaser overrides (theme-token aware) ---------------- */
+.t-locktag { margin-left:auto; display:inline-flex; align-items:center; gap:5px;
+  font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--warn); background:var(--warn-soft); padding:4px 10px;
+  border-radius:999px; white-space:nowrap; }
+.sec-head { display:flex; align-items:center; gap:10px; }
+
+/* nav unlock pill */
+.t-nav-unlock { display:inline-flex; align-items:center; gap:6px;
+  background:var(--accent-strong); color:#fff; text-decoration:none;
+  font-size:12.5px; font-weight:700; padding:7px 13px; border-radius:999px;
+  white-space:nowrap; transition:transform .15s ease, filter .15s ease; }
+.t-nav-unlock:hover { filter:brightness(1.06); transform:translateY(-1px); }
+:root[data-theme="dark"] .t-nav-unlock { color:#131b04; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .t-nav-unlock { color:#131b04; } }
+/* small screens: the section links all point to locked zones anyway -
+   hide them so the nav stays calm and the Unlock pill stays visible */
+@media (max-width: 720px) {
+  .nav-links { display:none; }
+  .t-nav-unlock { margin-left:auto; } }
+
+/* "+N more findings" chip at the end of the spotlight */
+.t-more { margin-top:18px; display:flex; align-items:center; justify-content:center;
+  gap:8px; padding:12px 16px; border:1.5px dashed var(--border); border-radius:12px;
+  color:var(--muted); font-size:13.5px; cursor:pointer; text-align:center;
+  transition:border-color .15s ease, color .15s ease; }
+.t-more:hover, .t-more:focus-visible { border-color:var(--accent); color:var(--text); }
+.t-more svg { color:var(--warn); flex:none; }
+.t-more b { color:var(--text); }
+
+/* per-quadrant "+N more locked" chip inside the spotlight quads */
+.t-qmore { margin-top:10px; display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px; border:1.5px dashed var(--border); border-radius:999px;
+  color:var(--muted); font-size:12px; font-weight:700; cursor:pointer;
+  transition:border-color .15s ease, color .15s ease; }
+.t-qmore:hover, .t-qmore:focus-visible { border-color:var(--accent); color:var(--text); }
+
+/* unlock card */
+#unlock { scroll-margin-top:76px; }
+.t-cta { position:relative; overflow:hidden; border-radius:20px;
+  background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow);
+  padding:clamp(20px, 4vw, 32px); }
+.t-cta::before { content:""; position:absolute; inset:0;
+  background:var(--hero-grad); opacity:.6; pointer-events:none; }
+.t-cta > * { position:relative; }
+.t-cta.pulse { animation:tPulse 1.4s ease-out 1; }
+@keyframes tPulse {
+  0%   { box-shadow:0 0 0 0 var(--accent-soft), var(--shadow); }
+  70%  { box-shadow:0 0 0 16px transparent, var(--shadow); }
+  100% { box-shadow:var(--shadow); } }
+.t-badge { display:inline-flex; align-items:center; gap:6px;
+  background:var(--accent-soft); color:var(--accent); font-size:10.5px;
+  font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  padding:5px 11px; border-radius:999px; margin-bottom:14px; }
+.t-cta h3 { margin:0 0 8px; font-size:clamp(19px, 2.6vw, 25px);
+  letter-spacing:-.02em; line-height:1.25; }
+.t-cta .t-sub { margin:0 0 18px; color:var(--muted); font-size:14.5px;
+  line-height:1.55; max-width:62ch; }
+.t-inside { list-style:none; margin:0 0 20px; padding:0; display:grid;
+  grid-template-columns:1fr 1fr; gap:9px 22px; }
+.t-inside li { display:flex; gap:9px; align-items:flex-start; font-size:13.5px;
+  line-height:1.45; color:var(--text); }
+.t-inside svg { color:var(--accent); flex:none; margin-top:2px; }
+.t-btns { display:flex; gap:12px; flex-wrap:wrap; }
+.t-btn { display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  padding:13px 22px; border-radius:12px; font-weight:700; font-size:14.5px;
+  text-decoration:none; transition:transform .15s ease, filter .15s ease;
+  min-height:48px; }
+.t-btn:hover { transform:translateY(-1px); }
+.t-btn:active { transform:translateY(0); }
+.t-btn.mail { background:var(--accent-strong); color:#fff;
+  box-shadow:0 6px 16px -8px var(--accent-strong); }
+:root[data-theme="dark"] .t-btn.mail { color:#131b04; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .t-btn.mail { color:#131b04; } }
+.t-btn svg { flex:none; }
+.t-mailto { color:var(--accent); font-weight:700; text-decoration:underline;
+  text-underline-offset:3px; text-decoration-thickness:1.5px; }
+.t-mailto:hover, .t-mailto:focus-visible { filter:brightness(1.1); }
+.t-fine { margin:14px 0 0; color:var(--muted); font-size:12.5px; }
+@media (max-width: 640px) {
+  .t-inside { grid-template-columns:1fr; }
+  .t-btns { flex-direction:column; }
+  .t-btn { width:100%; } }
+
+/* locked zones */
+.t-cover { position:relative; cursor:pointer; border-radius:14px;
+  outline:none; }
+.t-cover:focus-visible { box-shadow:0 0 0 3px var(--accent-soft); }
+.t-cover::after { content:""; position:absolute; inset:0; border-radius:14px;
+  background:linear-gradient(180deg, transparent 35%, var(--bg) 96%);
+  pointer-events:none; }
+.t-nextlock { margin-top:18px; }
+.t-skel { filter:blur(6px) saturate(.85); opacity:.55; user-select:none;
+  pointer-events:none; padding:18px; border:1px solid var(--border);
+  border-radius:14px; background:var(--surface); overflow:hidden; }
+.t-lockpill { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  z-index:2; display:inline-flex; align-items:center; gap:8px;
+  background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow);
+  padding:10px 17px; border-radius:999px; font-weight:700; font-size:13px;
+  color:var(--text); white-space:nowrap; }
+.t-lockpill svg { color:var(--warn); }
+/* locked remainder of the opportunity matrix, under the free sample rows */
+.t-mxlock { margin-top:14px; }
+/* long lock pills ("5 more rows, including 5 more GAPs - tap to unlock")
+   wrap on phones instead of clipping - the pill is absolutely centered,
+   so give it a box to wrap inside */
+@media (max-width: 640px) {
+  .t-lockpill { white-space:normal; text-align:center; max-width:min(88%, 330px); } }
+.t-skel .t-bar { display:inline-block; height:11px; border-radius:6px;
+  background:linear-gradient(90deg, var(--surface-2), var(--border), var(--surface-2));
+  background-size:200% 100%; animation:tShimmer 3s linear infinite; }
+@keyframes tShimmer { 0% { background-position:200% 0; } 100% { background-position:-200% 0; } }
+.t-row { display:flex; align-items:center; gap:10px; padding:9px 0; }
+.t-dot { width:26px; height:26px; border-radius:9px; flex:none;
+  background:linear-gradient(135deg, var(--border), var(--surface-2)); }
+.t-sq { width:16px; height:16px; border-radius:5px; flex:none;
+  background:var(--border); }
+.t-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.t-card { border:1px solid var(--border); border-radius:11px; padding:13px; }
+.t-card .t-bar { display:block; margin:7px 0; }
+@media (max-width: 640px) { .t-grid2 { grid-template-columns:1fr; } }
+
+/* collapsed competitor cards (between the matrix and next steps) -
+   native <details>, same component classes as the full report's cards */
+.t-comp > summary .chev { margin-left:0; }
+.t-comp > summary .t-mini { color:var(--muted); font-size:12.5px;
+  font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.t-comp-cover { position:relative; cursor:pointer; border-radius:12px; outline:none; }
+.t-comp-cover:focus-visible { box-shadow:0 0 0 3px var(--accent-soft); }
+.t-comp-cover .t-skel { border:none; background:transparent; padding:8px 2px 4px;
+  opacity:.5; }
+.t-comp-cover .t-lockpill { font-size:12px; padding:8px 14px; }
+/* skeleton that mirrors the your-app dashboard: identity row, stat chips,
+   then Loved / Frustrations / Requested finding blocks */
+.t-chips { display:flex; gap:7px; margin:8px 0 2px; }
+.t-chips .t-bar { height:9px; border-radius:5px; }
+.t-grid3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;
+  margin-top:12px; }
+.t-qhead { display:flex; align-items:center; gap:7px; }
+.t-qdot { width:9px; height:9px; border-radius:50%; flex:none;
+  background:var(--border); }
+.t-frow { display:flex; gap:8px; margin-top:9px; }
+.t-fmeter { display:flex; margin-top:5px; }
+.t-fmeter .t-bar { height:7px; }
+@media (max-width: 640px) {
+  /* keep the blurred preview light on phones: stack + drop the third block */
+  .t-grid3 { grid-template-columns:1fr; gap:8px; }
+  .t-grid3 .t-card:nth-child(3) { display:none; }
+  .t-comp > summary .t-mini { display:none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .t-skel .t-bar { animation:none; }
+  .t-cta.pulse { animation:none; }
+  .t-nav-unlock, .t-btn { transition:none; }
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap nav-inner">
+      <div class="brand">App<span>Intel</span></div>
+      <div class="nav-links"><a href="#spotlight">Your App</a><a href="#matrix">Gaps</a><a href="#competitors">Competitors</a><a href="#next">Next Steps</a><a href="#community">Demand</a></div>
+      <a class="t-nav-unlock" href="#unlock"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Unlock</a>
+      <button id="themeBtn" onclick="cycleTheme()" type="button"></button>
+    </div></nav>
+<div class="hero"><div class="wrap hero-inner">
+      <h1>Meal-Planning Apps: Feature &amp; Review Intelligence</h1>
+      <div class="hero-meta">Run 2026-09-17 &nbsp;·&nbsp; last 30 days,
+        refreshed every 30 days &nbsp;·&nbsp; English-language storefronts
+        </div>
+      <div class="kpis">
+        <div class="kpi"><b>69</b><span>reviews in the past 30 days</span></div>
+        <div class="kpi"><b>4</b><span>competitors tracked</span></div>
+        <div class="kpi"><b>51</b><span>feature signals tracked</span></div>
+        <div class="kpi"><b>4</b><span>releases tracked (90d)</span></div></div>
+      <div class="diffbox">
+      <div class="diff-head">
+        <span class="diff-title" title="Diff of finding slugs between the previous run and this one">Since last run</span>
+        <span class="diff-sum"><b class="c-new">6</b>&nbsp;new <span class="sep">·</span> <b class="c-res">6</b>&nbsp;went quiet</span>
+      </div>
+      <div class="diff-chips"><span class="chip d-chip new" title="First detected in this run (or resurfaced after going quiet).">Custom Moods <i>· Cozy Couples: Relationship App</i></span><span class="chip d-chip new" title="First detected in this run (or resurfaced after going quiet).">More Mood Options <i>· Cozy Couples: Relationship App</i></span><span class="chip d-chip res" title="Tracked before, but no matching reviews this window. It returns automatically if users mention it again.">Overall Excellence <i>· ELSA Speak - English Learning</i></span><span class="chip d-chip res" title="Tracked before, but no matching reviews this window. It returns automatically if users mention it again.">No Refund Policy <i>· ELSA Speak - English Learning</i></span><span class="chip d-chip more">+8 more</span></div>
+    </div>
+    </div></div>
+<section id="spotlight"><div class="wrap">
+      <div class="sec-head"><h2>Your App</h2></div>
+      <div class="sec-sub">Signals from your last 30 days of reviews.
+        Findings seen in 3+ runs are marked <span class="pill persistent">persistent</span>.</div>
+      <div class="app-head">
+      <span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#b45309,#92400e)">LC</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/26/a1/28/26a12804-c9ca-aa95-3095-0f86dd52a6b5/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.jpg" alt="lovelee couples: love note app app icon" onerror="this.remove()"></span>
+      <div>
+        <div class="app-title">lovelee couples: love note app</div>
+        <div class="app-sub">jack ingram</div>
+      </div>
+      <span class="badge-own">YOUR APP</span>
+    </div>
+    <div class="app-stats">
+      <span>★★★★★ <b>4.6</b>/5</span><span><b>0</b> reviews in the past 30 days</span>
+        <span><b style="color:var(--danger)">0</b> neg ·
+               <b style="color:var(--positive)">0</b> pos</span><span class="chip thin-chip" title="Only 0 reviews found in the past 30 days. With a sample this small the signals on this card are directional and can over- or under-state what users actually feel.">thin sample · 0</span></div>
+    <div class="store-links"><a class="store-lnk" href="https://apps.apple.com/app/id6754182711" target="_blank" rel="noopener noreferrer" title="Open lovelee couples: love note app on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div>
+    
+    
+      <div class="quad-grid" style="margin-top:16px"><div class="quad">
+          <div class="cat-head"><span class="dot pos"></span>Loved</div><div class="empty">Nothing significant this window</div></div><div class="quad">
+          <div class="cat-head"><span class="dot neg"></span>Frustrations</div><div class="empty">Nothing significant this window</div></div><div class="quad">
+          <div class="cat-head"><span class="dot req"></span>Requested</div><div class="empty">Nothing significant this window</div></div></div>
+    <div class="t-more" data-unlock>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> <span><b>51 more findings</b> + the full competitor
+      breakdown are locked in this preview - tap to unlock</span></div></div></section>
+<section id="matrix"><div class="wrap">
+      <div class="sec-head"><h2>Opportunity Matrix</h2></div>
+      <div class="sec-sub">Features users explicitly <b>love</b> elsewhere;
+        rows marked <span class="opp-tag">GAP</span> are missing from your app.</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Feature users love</th><th class="own">Your app</th><th class="">Paired: Couples &amp; Relationship</th><th class="">Cozy Couples: Relationship App</th><th class="">Lasting: Marriage &amp; Couples</th><th class="">Evergreen: Relationship Growth</th></tr></thead>
+        <tbody><tr class="opp">
+          <td class="feat">Facilitates In-depth Conversations <span class="opp-tag">GAP</span></td><td class="mk no own">✗</td><td class="mk yes">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr></tbody>
+      </table></div>
+    <div class="t-cover t-mxlock" data-unlock
+         aria-label="Locked: 7 more matrix rows in the full report">
+      <div class="t-skel" aria-hidden="true"><div class="t-row"><span class="t-bar" style="width:30%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div><div class="t-row"><span class="t-bar" style="width:39%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div><div class="t-row"><span class="t-bar" style="width:48%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div><div class="t-row"><span class="t-bar" style="width:30%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div><div class="t-row"><span class="t-bar" style="width:39%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div><div class="t-row"><span class="t-bar" style="width:48%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div><div class="t-row"><span class="t-bar" style="width:30%"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span><span class="t-sq"></span></div></div>
+      <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> 7 more rows, including 7 more GAPs - tap to unlock</div>
+    </div></div></section>
+<section id="competitors"><div class="wrap">
+      <div class="sec-head"><h2>Competitor Snapshots</h2>
+        <span class="t-locktag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Locked</span></div>
+      <div class="sec-sub">All 4 competitors tracked, one collapsed card each.
+        Expand a card to preview its dashboard - the exact same breakdown you
+        saw for your app, blurred until the report is unlocked.</div>
+      <details class="competitor t-comp">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#1d4ed8,#1e40af)">PC</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/0b/55/55/0b555571-e7f7-0b7e-b166-172d40114334/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/512x512bb.jpg" alt="Paired: Couples &amp; Relationship app icon" onerror="this.remove()"></span><span>Paired: Couples &amp; Relationship</span><span class="t-mini"><span class="stars">★★★★★</span> 4.7 · 21 reviews</span>
+            <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body">
+            <div class="t-comp-cover" data-unlock
+                 aria-label="Locked: the full breakdown for Paired: Couples &amp; Relationship is in the unlocked report">
+              <div class="t-skel" aria-hidden="true"><div class="t-row"><span class="t-dot"></span><span class="t-bar" style="width:24%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-chips"><span class="t-bar" style="width:58px"></span><span class="t-bar" style="width:84px"></span><span class="t-bar" style="width:66px"></span><span class="t-bar" style="width:52px"></span></div><div class="t-grid3"><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div></div></div>
+              <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Same dashboard as your app - tap to unlock</div>
+            </div>
+          </div>
+        </details><details class="competitor t-comp">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#e11d48,#9f1239)">CC</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/bd/41/4a/bd414ae6-b5d9-bd4d-7583-0aa9872cd281/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg" alt="Cozy Couples: Relationship App app icon" onerror="this.remove()"></span><span>Cozy Couples: Relationship App</span><span class="t-mini"><span class="stars">★★★★★</span> 4.8 · 44 reviews</span>
+            <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body">
+            <div class="t-comp-cover" data-unlock
+                 aria-label="Locked: the full breakdown for Cozy Couples: Relationship App is in the unlocked report">
+              <div class="t-skel" aria-hidden="true"><div class="t-row"><span class="t-dot"></span><span class="t-bar" style="width:24%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-chips"><span class="t-bar" style="width:58px"></span><span class="t-bar" style="width:84px"></span><span class="t-bar" style="width:66px"></span><span class="t-bar" style="width:52px"></span></div><div class="t-grid3"><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div></div></div>
+              <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Same dashboard as your app - tap to unlock</div>
+            </div>
+          </div>
+        </details><details class="competitor t-comp">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#1d4ed8,#1e40af)">LM</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/2a/3c/e5/2a3ce532-1a1b-c632-49e4-9f36c92f2abe/AppIcon-LC-0-0-1x_U007emarketing-0-10-0-85-220.png/512x512bb.jpg" alt="Lasting: Marriage &amp; Couples app icon" onerror="this.remove()"></span><span>Lasting: Marriage &amp; Couples</span><span class="t-mini"><span class="stars">★★★★★</span> 4.7 · 0 reviews</span>
+            <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body">
+            <div class="t-comp-cover" data-unlock
+                 aria-label="Locked: the full breakdown for Lasting: Marriage &amp; Couples is in the unlocked report">
+              <div class="t-skel" aria-hidden="true"><div class="t-row"><span class="t-dot"></span><span class="t-bar" style="width:24%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-chips"><span class="t-bar" style="width:58px"></span><span class="t-bar" style="width:84px"></span><span class="t-bar" style="width:66px"></span><span class="t-bar" style="width:52px"></span></div><div class="t-grid3"><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div></div></div>
+              <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Same dashboard as your app - tap to unlock</div>
+            </div>
+          </div>
+        </details><details class="competitor t-comp">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#e11d48,#9f1239)">ER</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/9a/17/c8/9a17c8df-2c1f-3876-6065-0e9fecffa2a5/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg" alt="Evergreen: Relationship Growth app icon" onerror="this.remove()"></span><span>Evergreen: Relationship Growth</span><span class="t-mini"><span class="stars">★★★★★</span> 4.8 · 4 reviews</span>
+            <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body">
+            <div class="t-comp-cover" data-unlock
+                 aria-label="Locked: the full breakdown for Evergreen: Relationship Growth is in the unlocked report">
+              <div class="t-skel" aria-hidden="true"><div class="t-row"><span class="t-dot"></span><span class="t-bar" style="width:24%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-chips"><span class="t-bar" style="width:58px"></span><span class="t-bar" style="width:84px"></span><span class="t-bar" style="width:66px"></span><span class="t-bar" style="width:52px"></span></div><div class="t-grid3"><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div><div class="t-card"><div class="t-qhead"><span class="t-qdot"></span><span class="t-bar" style="width:38%"></span></div><div class="t-frow"><span class="t-bar" style="width:50%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:74%"></span></div><div class="t-frow"><span class="t-bar" style="width:36%"></span><span class="t-bar" style="width:13%"></span></div><div class="t-fmeter"><span class="t-bar" style="width:50%"></span></div></div></div></div>
+              <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Same dashboard as your app - tap to unlock</div>
+            </div>
+          </div>
+        </details>
+    </div></section>
+<section id="next"><div class="wrap">
+      <div class="sec-head"><h2>Next Steps</h2></div>
+      <div class="sec-sub">AI synthesis across everything above: what to build
+        and what to ship first.</div>
+      
+      <div class="feat-row">
+        <div class="prio"><b>90</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Daily Connection Questions</h4>
+          <p>Introduce a daily question feature to facilitate meaningful conversations between couples, similar to what competitors&#x27; users love.</p>
+          <div class="f-ev">Evidence: Competitors (Paired, Cozy Couples) - Loved features: Daily Connection Questions (mentions 3, seen 1x runs), Daily Activities and Questions (mentions 4, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag high">HIGH</span><span class="tag S">S</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>85</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Mood Communication</h4>
+          <p>Add a mood-tracking feature to help couples express and share their emotional states with each other.</p>
+          <div class="f-ev">Evidence: Competitors (Cozy Couples) - Loved features: Mood Communication (mentions 8, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag high">HIGH</span><span class="tag M">M</span></div>
+      </div>
+    <div class="t-cover t-nextlock" data-unlock
+         aria-label="Locked: 6 more prioritized items in the full report">
+      <div class="t-skel" aria-hidden="true"><div class="t-row"><span class="t-sq"></span>
+          <span class="t-bar" style="width:34%"></span>
+          <span class="t-bar" style="width:46%"></span></div><div class="t-row"><span class="t-sq"></span>
+          <span class="t-bar" style="width:43%"></span>
+          <span class="t-bar" style="width:58%"></span></div><div class="t-row"><span class="t-sq"></span>
+          <span class="t-bar" style="width:52%"></span>
+          <span class="t-bar" style="width:46%"></span></div></div>
+      <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> 6 more prioritized items - tap to unlock</div>
+    </div></div></section>
+<section id="unlock"><div class="wrap">
+      <div class="t-cta" id="unlockCard">
+        <span class="t-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Sample preview</span>
+        <h3>51 more findings + full competitor breakdown unlocked</h3>
+        <p class="t-sub">This is generated by a system I built that tracks all
+          your competitor's reviews and yours, and flags exactly this kind of
+          thing automatically, feature gaps, version regressions, what users
+          love vs complain about, every 30 days, no manual digging.</p>
+        <ul class="t-inside"><li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>The rest of the Opportunity Matrix - 7 more feature rows, including 7 more GAPs with every competitor&#x27;s demand marked</span></li><li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Full competitor breakdown - all 4 cards expanded with the same depth as your app: version-by-version quality verdicts, release cadence and ratings momentum</span></li><li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>Community demand - 3 signals from Hacker News with machine-verified quotes</span></li><li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span>The rest of your prioritized roadmap - every remaining item with effort/impact and the evidence behind it</span></li></ul>
+        <p class="t-sub">I can set the whole thing up for your app
+          specifically, one-time, and it just runs. Want the full report
+          unlocked plus a quick walkthrough of what it'd look like for
+          <b>lovelee couples: love note app</b>? <a class="t-mailto" href="mailto:atharvapashine2004@gmail.com?subject=Full%20report%3A%20lovelee%20couples%3A%20love%20note%20app&amp;body=Hi%2C%20I%27d%20like%20the%20full%20unlocked%20report%20for%20lovelee%20couples%3A%20love%20note%20app%20plus%20a%20quick%20walkthrough.%20Thanks%21">Reply to
+          my email</a> and I'll send it over.</p>
+        <div class="t-btns">
+          <a class="t-btn mail" href="mailto:atharvapashine2004@gmail.com?subject=Full%20report%3A%20lovelee%20couples%3A%20love%20note%20app&amp;body=Hi%2C%20I%27d%20like%20the%20full%20unlocked%20report%20for%20lovelee%20couples%3A%20love%20note%20app%20plus%20a%20quick%20walkthrough.%20Thanks%21">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            atharvapashine2004@gmail.com</a>
+        </div>
+        <p class="t-fine">One message is all it takes - the full unlocked
+          dashboard is sent over personally, usually within a few hours.</p>
+      </div>
+    </div></section>
+<section id="community"><div class="wrap">
+      <div class="sec-head"><h2>Community Demand</h2>
+        <span class="t-locktag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Locked</span></div>
+      <div class="sec-sub">What people ask for on Hacker News, beyond store reviews - every quote machine-verified against its source post.</div>
+      <div class="t-cover" data-unlock
+           aria-label="Locked: available in the full report">
+        <div class="t-skel" aria-hidden="true"><div class="t-grid2"><div class="t-card">
+          <span class="t-bar" style="width:38%"></span>
+          <span class="t-bar" style="width:92%"></span>
+          <span class="t-bar" style="width:55%"></span>
+        </div><div class="t-card">
+          <span class="t-bar" style="width:45%"></span>
+          <span class="t-bar" style="width:92%"></span>
+          <span class="t-bar" style="width:73%"></span>
+        </div><div class="t-card">
+          <span class="t-bar" style="width:52%"></span>
+          <span class="t-bar" style="width:92%"></span>
+          <span class="t-bar" style="width:55%"></span>
+        </div><div class="t-card">
+          <span class="t-bar" style="width:59%"></span>
+          <span class="t-bar" style="width:92%"></span>
+          <span class="t-bar" style="width:73%"></span>
+        </div></div></div>
+        <div class="t-lockpill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Locked - tap to unlock</div>
+      </div>
+    </div></section>
+<footer><div class="wrap f-grid">
+      <div><b>About this page.</b> A locked sample preview generated from a real
+        AppIntel run for lovelee couples: love note app (2026-09-17, last 30 days). The locked
+        sections exist in the full report; their contents are not included in
+        this page - only placeholders are shown.</div>
+      <div><b>Get the full report.</b> Reply to the email you received, or write
+        to <a class="t-mailto" href="mailto:atharvapashine2004@gmail.com">atharvapashine2004@gmail.com</a>
+        and the complete unlocked dashboard will be sent over.</div>
+    </div></footer>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement, KEY = 'appintel-theme';
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+  /* ================= theme =================
+     No saved choice -> follow the system (CSS media query does the actual
+     styling; we only keep the button label in sync and react to OS flips).
+     Saved choice wins until the user clears it (never in this UI). */
+  function saved() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+  function effective() {
+    var v = saved();
+    if (v === 'light' || v === 'dark') return v;
+    return mq.matches ? 'dark' : 'light';
+  }
+  function apply() {
+    var v = saved();
+    if (v === 'light' || v === 'dark') { root.setAttribute('data-theme', v); }
+    else { root.removeAttribute('data-theme'); }
+    var btn = document.getElementById('themeBtn');
+    if (btn) {
+      var target = effective() === 'dark' ? 'light' : 'dark';
+      var sun = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+      var moon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+      btn.innerHTML = (target === 'dark' ? moon : sun) + ' ' + target.charAt(0).toUpperCase() + target.slice(1);
+      btn.setAttribute('aria-label', 'Switch to ' + target + ' mode');
+    }
+  }
+  window.cycleTheme = function () {
+    var next = effective() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    apply();
+  };
+  if (mq.addEventListener) {
+    mq.addEventListener('change', function () {
+      if (!saved()) { apply(); }        /* keep following the OS */
+    });
+  }
+  apply();
+})();
+</script>
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var card = document.getElementById('unlockCard');
+  function go() {
+    if (!card) return;
+    card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    card.classList.remove('pulse');
+    void card.offsetWidth;
+    card.classList.add('pulse');
+  }
+  document.querySelectorAll('[data-unlock]').forEach(function (el) {
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+    });
+  });
+  var pill = document.querySelector('.t-nav-unlock');
+  if (pill) pill.addEventListener('click', function (e) { e.preventDefault(); go(); });
+})();
+</script>
+</body>
+</html>
