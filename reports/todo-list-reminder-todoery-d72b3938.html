@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>AppIntel | Competitor Feature &amp; Review Intelligence</title>
+<script>try{var v=localStorage.getItem('appintel-theme');if(v==='light'||v==='dark'){document.documentElement.setAttribute('data-theme',v);}}catch(e){}
+</script>
+<style>:root {
+    /* Warm paper ground with slate ink and a basil-green identity hue:
+       editorial, kitchen-warm, not the default admin gray. */
+    --bg: #f7f6f3; --surface: #ffffff; --surface-2: #f3f2ee;
+    --text: #1c2333; --muted: #5d6779; --border: #e6e4de;
+    --accent: #467a10; --accent-strong: #38620b; --accent-soft: #467a1012;
+    --positive: #047857; --positive-soft: #04785714;
+    --danger: #dc2626; --danger-soft: #dc262610;
+    --warn: #b45309; --warn-soft: #b4530914;
+    --cat-pos: #059669; --cat-neg: #e11d48; --cat-req: #d97706;
+    --shadow: 0 1px 2px #1c233314, 0 6px 16px -10px #1c23331f;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #467a1016, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #b453090f, transparent 55%);
+}
+:root[data-theme="dark"] {
+    /* Blue-black slate ground; elevation is explicit (surface > surface-2),
+       never an inversion of light. Identity hue = basil green (food-native),
+       status hues only ever encode state. */
+    --bg: #0b101d; --surface: #121828; --surface-2: #1a2236;
+    --text: #e8ebf5; --muted: #97a1b7; --border: #232d45;
+    --accent: #a3c76d; --accent-strong: #84cc16; --accent-soft: #65a30d2e;
+    --positive: #34d399; --positive-soft: #10b98124;
+    --danger: #fb7185; --danger-soft: #f43f5e24;
+    --warn: #fbbf24; --warn-soft: #f59e0b24;
+    --cat-pos: #34d399; --cat-neg: #fb7185; --cat-req: #fbbf24;
+    --shadow: 0 1px 2px #00000066, 0 8px 18px -12px #0000008c;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #4d7c0f3a, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #84cc161f, transparent 55%);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    /* Blue-black slate ground; elevation is explicit (surface > surface-2),
+       never an inversion of light. Identity hue = basil green (food-native),
+       status hues only ever encode state. */
+    --bg: #0b101d; --surface: #121828; --surface-2: #1a2236;
+    --text: #e8ebf5; --muted: #97a1b7; --border: #232d45;
+    --accent: #a3c76d; --accent-strong: #84cc16; --accent-soft: #65a30d2e;
+    --positive: #34d399; --positive-soft: #10b98124;
+    --danger: #fb7185; --danger-soft: #f43f5e24;
+    --warn: #fbbf24; --warn-soft: #f59e0b24;
+    --cat-pos: #34d399; --cat-neg: #fb7185; --cat-req: #fbbf24;
+    --shadow: 0 1px 2px #00000066, 0 8px 18px -12px #0000008c;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #4d7c0f3a, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #84cc161f, transparent 55%);
+} }
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter,
+               "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  font-size: 15px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  transition: background .25s ease, color .25s ease;
+}
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- nav ---------- */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner { display: flex; align-items: center; gap: 18px; height: 56px; }
+.brand { font-weight: 700; letter-spacing: -.02em; font-size: 15px; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; flex: 1; overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  color: var(--muted); font-size: 13px; font-weight: 500;
+  padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface-2); text-decoration: none; }
+#themeBtn {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  min-height: 34px; min-width: 34px; justify-content: center;
+}
+#themeBtn:hover { border-color: var(--accent); }
+#themeBtn svg { flex: none; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--hero-grad); border-bottom: 1px solid var(--border); }
+.hero-inner { padding: 46px 24px 34px; }
+h1 { font-size: 30px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
+.hero-meta { color: var(--muted); margin-top: 8px; font-size: 13.5px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; margin-top: 26px; }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.kpi b { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.kpi span { color: var(--muted); font-size: 12px; font-weight: 500; }
+
+/* ---------- "this week vs last run" box (under KPI strip) ---------- */
+.diffbox {
+  margin-top: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+}
+.diffbox.flat {
+  color: var(--muted); font-size: 13px; gap: 9px; align-items: center;
+}
+.diffbox.flat b { color: var(--text); }
+.diff-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.diff-title {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); cursor: help; white-space: nowrap;
+}
+.diff-sum { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.diff-sum b { font-size: 15px; font-weight: 800; }
+.diff-sum .c-new { color: var(--accent); }
+.diff-sum .c-pers { color: var(--warn); }
+.diff-sum .c-res { color: var(--positive); }
+.diff-sum .sep { margin: 0 7px; opacity: .55; }
+.diff-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.d-chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+  font-weight: 600; color: var(--text); cursor: help; max-width: 100%;
+}
+.d-chip i { font-style: normal; color: var(--muted); font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.d-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.d-chip.new::before { background: var(--accent); }
+.d-chip.pers::before { background: var(--warn); }
+.d-chip.res::before { background: var(--positive); }
+.d-chip.more { color: var(--muted); cursor: default; }
+.d-chip.more::before { display: none; }
+
+/* ---------- thin-sample flag ---------- */
+.chip.thin-chip {
+  color: var(--warn); background: var(--warn-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--warn) 38%, var(--border));
+}
+.thin-note {
+  font-size: 12.5px; color: var(--muted); background: var(--warn-soft);
+  border-radius: 9px; padding: 8px 12px; margin: 2px 0 14px;
+}
+.thin-note b { color: var(--warn); }
+
+/* ---------- momentum strip (store metadata) ---------- */
+.momentum { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip.mv { font-size: 12px; padding: 3px 9px; }
+.chip.mv.up { color: var(--positive); background: var(--positive-soft);
+  border-color: color-mix(in srgb, var(--positive) 30%, var(--border)); }
+
+/* ---------- version quality block ---------- */
+.vblock { margin-top: 12px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface-2); padding: 12px 13px; }
+.vb-head { display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  margin-bottom: 8px; }
+.vtable table { width: 100%; max-width: 460px; min-width: 0; border-collapse: collapse; font-size: 12.5px; }
+.vtable th, .vtable td { padding: 5px 8px; border-top: 1px solid var(--border); text-align: left; }
+.vtable th:nth-child(n+2), .vtable td:nth-child(n+2) { text-align: right; }
+.vtable thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); border-top: 0; background: transparent; }
+.vtable tr.latest td { background: var(--accent-soft); }
+.lat { font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--accent);
+  vertical-align: 1px; }
+.chip.v-reg { color: var(--danger); background: var(--danger-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--danger) 38%, var(--border)); }
+.chip.v-imp { color: var(--positive); background: var(--positive-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--positive) 30%, var(--border)); }
+.chip.v-stable { color: var(--muted); cursor: help; }
+.chip.v-low { color: var(--muted); font-style: italic; cursor: help; }
+.v-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+/* ---------- community demand ---------- */
+.demand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.d-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.d-card .f-row { align-items: center; }
+.chip.dtype { font-size: 11px; font-weight: 800; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--muted); }
+.d-meta { font-size: 12px; color: var(--muted); margin-top: 7px; cursor: help; }
+.chip.src { font-size: 11px; padding: 1px 8px; margin-left: 6px;
+  background: var(--surface-2); text-transform: uppercase; letter-spacing: .05em; }
+.d-desc { font-size: 13px; color: var(--text); margin-top: 6px; }
+.d-apps { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; align-items: center; }
+.chip.d-app { font-size: 12px; padding: 2px 9px; color: var(--accent);
+  background: var(--accent-soft); border-color: transparent; }
+.d-noapp { font-size: 11.5px; color: var(--muted); font-style: italic; }
+/* provenance: clickable chips that open the ACTUAL cited community posts */
+.d-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.d-links .lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+a.d-lnk { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px;
+  font-weight: 600; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease; }
+a.d-lnk:hover { color: var(--accent); text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+a.d-lnk svg { flex: none; opacity: .7; }
+
+/* ---------- sections ---------- */
+section { padding: 42px 0 8px; scroll-margin-top: 64px; }
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+.sec-head h2 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
+.sec-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; max-width: 780px; }
+.sec-sub b { color: var(--text); }
+
+/* ---------- app cards + icons ---------- */
+.app-head { display: flex; align-items: center; gap: 12px; }
+.app-icon-wrap { position: relative; width: 44px; height: 44px; flex: none; }
+.app-icon-wrap .app-icon { position: absolute; inset: 0; width: 100%; height: 100%; }
+.app-icon {
+  width: 44px; height: 44px; border-radius: 12px; object-fit: cover; background: var(--surface-2);
+  border: 1px solid var(--border); flex: none; display: block;
+}
+img.app-icon { z-index: 1; }
+.app-icon.avatar {
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .02em; border: 0;
+}
+.app-title { font-weight: 700; font-size: 15.5px; letter-spacing: -.01em; }
+.app-sub { color: var(--muted); font-size: 12.5px; }
+.badge-own {
+  font-size: 11px; font-weight: 800; letter-spacing: .09em; color: var(--accent);
+  background: var(--accent-soft); border-radius: 6px; padding: 3px 7px; margin-left: auto;
+}
+.app-stats { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+.app-stats b { color: var(--text); font-weight: 700; }
+.stars { color: var(--warn); letter-spacing: 1px; }
+/* store listings: slim chips linking each app to its Play / App Store page */
+.store-links { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 10px; }
+.app-head + .app-stats + .store-links { margin-top: 9px; }
+a.store-lnk { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px;
+  font-weight: 700; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease; }
+a.store-lnk:hover { color: var(--accent); text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--accent-soft); }
+a.store-lnk svg { flex: none; opacity: .8; }
+
+/* ---------- finding blocks ---------- */
+.cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.cat-block {
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 15px;
+  background: var(--surface-2);
+}
+/* inside the tinted block the quote needs the inverse surface to read as a chip */
+.cat-block .quote { background: var(--surface); }
+.cat-head {
+  display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 9px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot.pos { background: var(--positive); } .dot.neg { background: var(--danger); }
+.dot.req { background: var(--warn); }
+.finding { padding: 8px 0; border-top: 1px solid var(--border); }
+.finding:first-of-type { border-top: 0; padding-top: 2px; }
+/* competitor cat blocks match the spotlight rhythm */
+.cats .finding { padding: 10px 0; }
+.cats .f-label { font-size: 14px; }
+.f-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.f-label { font-weight: 600; font-size: 13.5px; flex: 1; min-width: 120px; }
+.f-mentions { color: var(--muted); font-size: 12px; white-space: nowrap; cursor: help; }
+.pill {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+}
+.pill.persistent { color: var(--accent); background: var(--accent-soft); }
+.pill.hot { color: var(--danger); background: var(--danger-soft); }
+.meter { height: 3px; border-radius: 2px; background: var(--surface); overflow: hidden; margin-top: 5px; }
+.meter i { display: block; height: 100%; border-radius: 2px; }
+.meter i.pos { background: var(--cat-pos); }
+.meter i.neg { background: var(--cat-neg); }
+.meter i.req { background: var(--cat-req); }
+.quote {
+  margin-top: 6px; font-size: 12.5px; color: var(--muted); font-style: italic;
+  background: var(--surface-2); border-radius: 8px; padding: 7px 10px;
+}
+.empty { color: var(--muted); font-size: 12.5px; font-style: italic; padding: 4px 0 2px; }
+
+/* ---------- spotlight quadrants ---------- */
+.quad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.quad {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px; box-shadow: var(--shadow);
+}
+.quad .cat-head { font-size: 12.5px; margin-bottom: 12px; }
+.quad .finding { padding: 10px 0; }
+.quad .f-label { font-size: 14px; }
+
+/* ---------- matrix ---------- */
+.table-wrap {
+  overflow-x: auto; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--surface); box-shadow: var(--shadow); -webkit-overflow-scrolling: touch;
+  padding: 6px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.table-wrap::-webkit-scrollbar { height: 8px; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 680px; }
+th, td { padding: 11px 14px; text-align: left; border-top: 1px solid var(--border); }
+thead th {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+  border-top: 0; background: var(--surface-2); font-weight: 700;
+}
+td.feat { font-weight: 600; max-width: 300px; }
+.mk { font-weight: 700; font-size: 13px; }
+.mk.yes { color: var(--positive); } .mk.no { color: var(--muted); font-weight: 500; }
+.mk.part { color: var(--warn); }
+tr.opp td.own { background: var(--danger-soft); }
+tr.opp td.own.mk.no { color: var(--danger); font-weight: 800; }
+th.own { color: var(--text); }
+.opp-tag { font-size: 11px; font-weight: 800; color: var(--danger); letter-spacing: .05em; }
+
+/* ---------- chips ---------- */
+.chip {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  border: 1px solid var(--border); background: var(--surface);
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+
+/* ---------- strategy ---------- */
+.feat-row {
+  display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 15px 17px; box-shadow: var(--shadow); margin-bottom: 11px;
+}
+.prio { text-align: center; }
+.prio b { font-size: 19px; font-weight: 800; color: var(--accent); display: block; line-height: 1.1; }
+.prio span { font-size: 11px; font-weight: 700; letter-spacing: .09em; color: var(--muted); }
+.feat-row h4 { font-size: 14.5px; font-weight: 700; letter-spacing: -.01em; }
+.feat-row p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.f-ev { font-size: 12px; color: var(--muted); margin-top: 7px; }
+.tag-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; letter-spacing: .03em; }
+.tag.high { color: var(--positive); background: var(--positive-soft); }
+.tag.med  { color: var(--warn); background: var(--warn-soft); }
+.tag.low  { color: var(--muted); background: var(--surface-2); }
+.positioning {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-radius: 16px;
+  padding: 18px 20px; box-shadow: var(--shadow); font-size: 14.5px; line-height: 1.6;
+  margin-bottom: 22px;
+}
+.positioning h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
+
+details.competitor { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+details.competitor > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px; font-weight: 700; font-size: 15px; min-height: 52px;
+}
+details.competitor > summary::-webkit-details-marker { display: none; }
+details.competitor > summary .app-icon-wrap { width: 38px; height: 38px; }
+details.competitor > summary .app-icon { border-radius: 10px; font-size: 13px; }
+details.competitor > summary .chev { margin-left: auto; color: var(--muted); transition: transform .2s; flex: none; }
+details.competitor > summary:focus-visible { outline-offset: -2px; }
+details.competitor[open] > summary .chev { transform: rotate(90deg); }
+details.competitor > .body { padding: 4px 18px 18px; border-top: 1px solid var(--border); }
+
+footer { margin-top: 52px; border-top: 1px solid var(--border); padding: 26px 0 40px; color: var(--muted); font-size: 12.5px; }
+footer b { color: var(--text); }
+.f-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  .nav-inner { gap: 10px; height: 52px; }
+  .hero-inner { padding: 30px 16px 24px; }
+  h1 { font-size: 25px; }
+  .hero-meta { font-size: 12px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 18px; }
+  .kpi { padding: 11px 12px; border-radius: 12px; }
+  .kpi b { font-size: 17px; }
+  .kpi span { font-size: 12px; }
+  .diffbox { padding: 11px 13px; border-radius: 12px; gap: 6px 12px; }
+  .diff-sum { white-space: normal; }
+  .diff-sum .sep { margin: 0 5px; }
+  .d-chip { font-size: 12px; max-width: 100%; }
+  .d-chip i { max-width: 130px; }
+  .thin-note { font-size: 12px; }
+  section { padding: 30px 0 6px; }
+  .sec-head h2 { font-size: 18px; }
+  .sec-sub { font-size: 12.5px; margin-bottom: 16px; }
+  .cats, .quad-grid { grid-template-columns: 1fr; }
+  .quad { padding: 14px; }
+  .feat-row { grid-template-columns: 52px 1fr; gap: 12px; }
+  .feat-row .tag-row { grid-column: 1 / -1; }
+  .momentum { gap: 5px; }
+  .chip.mv { font-size: 12px; padding: 2px 8px; }
+  .vblock { padding: 10px 11px; }
+  .vtable th, .vtable td { padding: 4px 6px; }
+  .demand-grid { grid-template-columns: 1fr; gap: 10px; }
+  .d-card { padding: 12px 13px; }
+  .d-card .f-label { font-size: 13px; }
+}
+@media (max-width: 460px) {
+  .brand { font-size: 13px; }
+  .nav-links a { padding: 5px 8px; font-size: 12px; }
+  #themeBtn { padding: 5px 10px; font-size: 11.5px; }
+  details.competitor > summary { padding: 13px 14px; font-size: 14px; gap: 10px; }
+  details.competitor > .body { padding: 4px 14px 14px; }
+  .app-icon-wrap { width: 38px; height: 38px; }
+  .app-icon.avatar { font-size: 13px; }
+  .f-label { font-size: 13px; }
+  .feat-row { padding: 12px 13px; }
+  th, td { padding: 9px 10px; }
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap nav-inner">
+      <div class="brand">App<span>Intel</span></div>
+      <div class="nav-links"><a href="#spotlight">Your App</a><a href="#competitors">Competitors</a><a href="#matrix">Gaps</a><a href="#community">Demand</a><a href="#next">Next Steps</a></div>
+      <button id="themeBtn" onclick="cycleTheme()" type="button"></button>
+    </div></nav>
+<div class="hero"><div class="wrap hero-inner">
+      <h1>Todo List & Reminder - Todoery: Feature &amp; Review Intelligence</h1>
+      <div class="hero-meta">Run 2026-09-18 &nbsp;·&nbsp; last 30 days,
+        refreshed every 30 days &nbsp;·&nbsp; English-language storefronts
+        </div>
+      <div class="kpis">
+        <div class="kpi"><b>36</b><span>reviews in the past 30 days</span></div>
+        <div class="kpi"><b>2</b><span>competitors tracked</span></div>
+        <div class="kpi"><b>29</b><span>feature signals tracked</span></div>
+        <div class="kpi"><b>3</b><span>releases tracked (90d)</span></div></div>
+      <div class="diffbox flat"><span class="dot req"></span><b>Baseline run.</b> Shift tracking starts next run - this report sets the reference point.</div>
+    </div></div>
+<section id="spotlight"><div class="wrap">
+      <div class="sec-head"><h2>Your App</h2></div>
+      <div class="sec-sub">Signals from your last 30 days of reviews.
+        Findings seen in 3+ runs are marked <span class="pill persistent">persistent</span>.</div>
+      <div class="app-head">
+      <span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#1d4ed8,#1e40af)">TL</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/61/46/39/614639cb-a484-e989-cedc-eb8c92e93d54/AppIcon-0-0-1x_U007epad-0-0-0-1-0-0-85-220.png/512x512bb.jpg" alt="Todo List &amp; Reminder - Todoery app icon" onerror="this.remove()"></span>
+      <div>
+        <div class="app-title">Todo List &amp; Reminder - Todoery</div>
+        <div class="app-sub">BetterApp Tech Co., Limited</div>
+      </div>
+      <span class="badge-own">YOUR APP</span>
+    </div>
+    <div class="app-stats">
+      <span>★★★★★ <b>4.6</b>/5</span><span><b>20</b> reviews in the past 30 days</span>
+        <span><b style="color:var(--danger)">5</b> neg ·
+               <b style="color:var(--positive)">15</b> pos</span><span><b>1</b> markets · most active: US</span></div>
+    <div class="store-links"><a class="store-lnk" href="https://apps.apple.com/app/id1640609657" target="_blank" rel="noopener noreferrer" title="Open Todo List &amp; Reminder - Todoery on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div>
+    
+    <div class="vblock">
+      <div class="vb-head"><span class="cat-head" style="margin:0">Version quality</span>
+        <span class="chip v-low" title="Too few reviews on the latest version in this window for a reliable verdict.">low sample</span></div>
+      <div class="vtable"><table>
+        <thead><tr><th>Version</th><th>Reviews</th><th>Avg</th><th>Negative</th></tr></thead>
+        <tbody><tr class="latest"><td>v3.9.6 <span class=lat>LATEST</span></td><td>1</td><td>1.0</td><td>100%</td></tr><tr class=""><td>v3.9.5</td><td>1</td><td>5.0</td><td>0%</td></tr><tr class=""><td>v3.9.4</td><td>1</td><td>5.0</td><td>0%</td></tr></tbody>
+      </table></div><div class="v-note">The latest version (v3.9.6) shows a regression in app monetization, with users complaining about aggressive paywalls and deceptive &#x27;free&#x27; claims.</div>
+    </div>
+      <div class="quad-grid" style="margin-top:16px"><div class="quad">
+          <div class="cat-head"><span class="dot pos"></span>Loved</div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Easy to Use</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 5 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">5 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“Great App Easy to use. Very beneficial.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Helps with Productivity</span>
+        
+        <span class="f-mentions" title="Mentioned by 4 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">4 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:80%"></i></div>
+      <div class="quote">“It helps me get more things done like cleaning my room”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Comprehensive Feature Set</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:20%"></i></div>
+      <div class="quote">“This app has it all. Combines a to-do list, a reminder list, one-off reminders, etc.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Easy Reminder Setup</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:20%"></i></div>
+      <div class="quote">“very easy to set it up I love u can set times to ring easy”</div>
+    </div></div><div class="quad">
+          <div class="cat-head"><span class="dot neg"></span>Frustrations</div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Aggressive Paywall</span>
+        
+        <span class="f-mentions" title="Mentioned by 4 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">4 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“Too many apps say theyre free, but when you download it, they immediately post their subscription page”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Too Many Paid Features</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:50%"></i></div>
+      <div class="quote">“99 percent things are paid. So uninstalling.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Widget Not Working</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:25%"></i></div>
+      <div class="quote">“As much as I love this app, I cant get the widget to work.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Repeat Setting Disappears</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:25%"></i></div>
+      <div class="quote">“when I create a task and set it to repeat, for example, weekly, if I exit the app and go back into the app, the repeat disappears.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Google Calendar Sync Not Working</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:25%"></i></div>
+      <div class="quote">“Syncing my Google calendar doesn&#x27;t sync the tasks into the to-do list.”</div>
+    </div></div><div class="quad">
+          <div class="cat-head"><span class="dot req"></span>Requested</div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Photo Widget Background</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“Please add ability to use photo to customize widget background”</div>
+    </div></div></div>
+    </div></section>
+<section id="competitors"><div class="wrap">
+      <div class="sec-head"><h2>Competitor Snapshots</h2></div>
+      <div class="sec-sub">Click a card to expand: the same signal breakdown as
+        your app, with quotes, plus store momentum - current version, release
+        cadence, ratings growth - and version-quality verdicts.</div>
+      <details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#e11d48,#9f1239)">TD</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d1/06/be/d106bef0-2d29-6f17-344f-d880f49b0ad0/ToDo-0-0-1x_U007epad-0-0-0-1-0-0-sRGB-85-220.png/512x512bb.jpg" alt="To Do List - Reminders &amp; Tasks app icon" onerror="this.remove()"></span><span>To Do List - Reminders &amp; Tasks</span>
+            <span class="app-sub"><span class="stars">★★★★★</span> 4.7 · 3 reviews in the past 30 days</span><span class="chip thin-chip" title="Only 3 reviews found in the past 30 days. With a sample this small the signals on this card are directional and can over- or under-state what users actually feel.">thin sample · 3</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="thin-note"><b>Thin data.</b> Only 3 reviews in the past 30 days - treat these signals as directional, not definitive.</div><div class="store-links"><a class="store-lnk" href="https://play.google.com/store/apps/details?id=app.monelyze.ToDo" target="_blank" rel="noopener noreferrer" title="Open To Do List - Reminders &amp; Tasks on Google Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Google Play</span></a><a class="store-lnk" href="https://apps.apple.com/app/id1476066606" target="_blank" rel="noopener noreferrer" title="Open To Do List - Reminders &amp; Tasks on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Ease of Use</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“Efficient and Easy, visually pleasing Awesome. ease of use.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Clean and Organized Interface</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“Quick, organized. No extra clutter. Visually pleasing.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">No Ads</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:50%"></i></div>
+      <div class="quote">“No ads, no bogus.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Long-Term Reliability</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:50%"></i></div>
+      <div class="quote">“To do list I love this app and have been using it for years.”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="empty">Nothing significant this window</div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="empty">Nothing significant this window</div>
+    </div></div></div>
+        </details><details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#047857,#065f46)">D-</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/54/b6/ea/54b6eaaf-f0c4-eb17-0663-5b1bfccbb93b/Do-AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg" alt="Do! - Simple To Do List app icon" onerror="this.remove()"></span><span>Do! - Simple To Do List</span>
+            <span class="app-sub"><span class="stars">★★★★★</span> 4.7 · 13 reviews in the past 30 days</span><span class="chip thin-chip" title="Only 13 reviews found in the past 30 days. With a sample this small the signals on this card are directional and can over- or under-state what users actually feel.">thin sample · 13</span><span class="chip v-imp" title="Per-version quality verdict computed from raw reviews: the latest version&#x27;s negative-review share vs older versions. Details inside.">improved</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="thin-note"><b>Thin data.</b> Only 13 reviews in the past 30 days - treat these signals as directional, not definitive.</div><div class="store-links"><a class="store-lnk" href="https://play.google.com/store/apps/details?id=com.newsu1.doiap" target="_blank" rel="noopener noreferrer" title="Open Do! - Simple To Do List on Google Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Google Play</span></a><a class="store-lnk" href="https://apps.apple.com/app/id421819675" target="_blank" rel="noopener noreferrer" title="Open Do! - Simple To Do List on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="vblock">
+      <div class="vb-head"><span class="cat-head" style="margin:0">Version quality</span>
+        <span class="chip v-imp" title="Negative-review share on the latest version dropped to 0.6x or less of the older-version baseline.">improved</span></div>
+      <div class="vtable"><table>
+        <thead><tr><th>Version</th><th>Reviews</th><th>Avg</th><th>Negative</th></tr></thead>
+        <tbody><tr class="latest"><td>v7.7.1 <span class=lat>LATEST</span></td><td>5</td><td>5.0</td><td>0%</td></tr><tr class=""><td>v7.6.1</td><td>6</td><td>4.0</td><td>33%</td></tr><tr class=""><td>v7.5.2</td><td>2</td><td>3.0</td><td>100%</td></tr></tbody>
+      </table></div><div class="v-note">Latest version v7.7.1 shows clear improvement, with 5/5 reviews praising new features and no negative feedback, compared to v7.5.2 which had 100% negative reviews.</div>
+    </div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Simple and Clean Design</span>
+        
+        <span class="f-mentions" title="Mentioned by 3 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">3 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“The simplicity is greatly appreciated”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">No Paywall for Core Features</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:66%"></i></div>
+      <div class="quote">“havent gotten to a paywall anywhere and you can customise the app to make it exactly how you like”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Dark Mode and Widget Support</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:33%"></i></div>
+      <div class="quote">“the fact I can set a widget and have it all in darkmode is incredible”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Latest Version&#x27;s New Features</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:33%"></i></div>
+      <div class="quote">“Latest version has some really useful new features”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Purchase Locked to Single Account</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“one time purchase on one account means its LOCKED to that account... have to pay for the upgrade on both”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">App Freezes with Many Tasks</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“Freezes after every edit if you have many tasks”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Unreliable Touch Input</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“app doesnt sense my tap over the item... have to tap four or six times just to get it to register”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Notifications Not Working</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“not reminding me anything... notifications are off like everything should be coming in”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Custom Biweekly Recurring Tasks</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“adding a biweekly option but on different days or tasks every 5weeks”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Windows Desktop App/Sync</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“wish the app could be connected to my windows laptop so I could have it on both”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Interactive Widget</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“widget should have an interaction feature where you can cross off items while on the Ho”</div>
+    </div>
+    </div></div></div>
+        </details>
+    </div></section>
+<section id="matrix"><div class="wrap">
+      <div class="sec-head"><h2>Opportunity Matrix</h2></div>
+      <div class="sec-sub">Features users explicitly <b>love</b> elsewhere;
+        rows marked <span class="opp-tag">GAP</span> are missing from your app.</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Feature users love</th><th class="own">Your app</th><th class="">To Do List - Reminders &amp; Tasks</th><th class="">Do! - Simple To Do List</th></tr></thead>
+        <tbody><tr class="">
+          <td class="feat">Easy to Use</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Helps with Productivity</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Comprehensive Feature Set</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Easy Reminder Setup</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Ease of Use</td><td class="mk yes own">✓</td><td class="mk yes">✓</td><td class="mk no">✗</td></tr><tr class="opp">
+          <td class="feat">Clean and Organized Interface <span class="opp-tag">GAP</span></td><td class="mk no own">✗</td><td class="mk yes">✓</td><td class="mk no">✗</td></tr><tr class="opp">
+          <td class="feat">No Ads <span class="opp-tag">GAP</span></td><td class="mk no own">✗</td><td class="mk yes">✓</td><td class="mk no">✗</td></tr><tr class="opp">
+          <td class="feat">Long-Term Reliability <span class="opp-tag">GAP</span></td><td class="mk no own">✗</td><td class="mk yes">✓</td><td class="mk no">✗</td></tr></tbody>
+      </table></div>
+    </div></section>
+<section id="community"><div class="wrap">
+      <div class="sec-head"><h2>Community Demand</h2></div>
+      <div class="sec-sub">What people ask for on Hacker News, beyond
+        store reviews. Hacker News: reachable. Quotes are machine-verified against
+        the source posts, and every card links to the original discussions.</div>
+      <div class="demand-grid"><div class="d-card">
+          <div class="f-row">
+            <span class="dot brk"></span>
+            <span class="f-label">Switching Apps Due to Failure or Inefficacy</span>
+            <span class="chip dtype">switching</span>
+          </div>
+          <div class="d-meta" title="Engagement = post score + comments, recomputed
+            locally from the cited posts; every quote is machine-checked against
+            its source before display">3 posts ·
+            engagement 493 · seen in 1 run
+            <span class="chip src">hn</span></div>
+          <div class="d-desc">Users abandon digital productivity apps entirely, often building their own custom solutions or physical tools when existing apps fail to meet their needs.</div>
+          <div class="quote">“I built a physical device because productivity apps failed me”</div>
+          <div class="d-links"><span class="lbl">Sources</span><a class="d-lnk" href="https://jeffhuang.com/productivity_text_file/" target="_blank" rel="noopener noreferrer" title="https://jeffhuang.com/productivity_text_file/" aria-label="Open the cited community post on jeffhuang.com in a new tab"><span>Post 1</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://lumium.netlify.app/" target="_blank" rel="noopener noreferrer" title="https://lumium.netlify.app/" aria-label="Open the cited community post on lumium.netlify.app in a new tab"><span>Post 2</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://github.com/mduffster/utility-explorer" target="_blank" rel="noopener noreferrer" title="https://github.com/mduffster/utility-explorer" aria-label="Open the cited community post on github.com in a new tab"><span>Post 3</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a></div>
+          <div class="d-apps"><span class="d-noapp">no specific app</span></div>
+        </div><div class="d-card">
+          <div class="f-row">
+            <span class="dot req"></span>
+            <span class="f-label">Gamification for ADHD and Focus</span>
+            <span class="chip dtype">wish</span>
+          </div>
+          <div class="d-meta" title="Engagement = post score + comments, recomputed
+            locally from the cited posts; every quote is machine-checked against
+            its source before display">5 posts ·
+            engagement 20 · seen in 1 run
+            <span class="chip src">hn</span></div>
+          <div class="d-desc">Users desire productivity apps with game-like elements to help manage focus and task completion, specifically for neurodivergent individuals.</div>
+          <div class="quote">“I built Hypermonkey, a productivity app for my friends who were struggling to stay productive because of their ADHD. I gamified it”</div>
+          <div class="d-links"><span class="lbl">Sources</span><a class="d-lnk" href="https://www.tryhypermonkey.com/" target="_blank" rel="noopener noreferrer" title="https://www.tryhypermonkey.com/" aria-label="Open the cited community post on tryhypermonkey.com in a new tab"><span>Post 1</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://github.com/kks0488/dailywave" target="_blank" rel="noopener noreferrer" title="https://github.com/kks0488/dailywave" aria-label="Open the cited community post on github.com in a new tab"><span>Post 2</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://maincharacter.game" target="_blank" rel="noopener noreferrer" title="https://maincharacter.game" aria-label="Open the cited community post on maincharacter.game in a new tab"><span>Post 3</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a></div>
+          <div class="d-apps"><span class="d-noapp">no specific app</span></div>
+        </div><div class="d-card">
+          <div class="f-row">
+            <span class="dot req"></span>
+            <span class="f-label">Apps Designed for Neurodivergent Individuals</span>
+            <span class="chip dtype">wish</span>
+          </div>
+          <div class="d-meta" title="Engagement = post score + comments, recomputed
+            locally from the cited posts; every quote is machine-checked against
+            its source before display">3 posts ·
+            engagement 14 · seen in 1 run
+            <span class="chip src">hn</span></div>
+          <div class="d-desc">There is a clear demand for productivity apps specifically designed to support the unique challenges of neurodivergent users like those with ADHD.</div>
+          <div class="quote">“Productivity App for Neurodivergent Individuals”</div>
+          <div class="d-links"><span class="lbl">Sources</span><a class="d-lnk" href="https://www.tryhypermonkey.com/" target="_blank" rel="noopener noreferrer" title="https://www.tryhypermonkey.com/" aria-label="Open the cited community post on tryhypermonkey.com in a new tab"><span>Post 1</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://github.com/mduffster/utility-explorer" target="_blank" rel="noopener noreferrer" title="https://github.com/mduffster/utility-explorer" aria-label="Open the cited community post on github.com in a new tab"><span>Post 2</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://dashzz.com" target="_blank" rel="noopener noreferrer" title="https://dashzz.com" aria-label="Open the cited community post on dashzz.com in a new tab"><span>Post 3</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a></div>
+          <div class="d-apps"><span class="d-noapp">no specific app</span></div>
+        </div><div class="d-card">
+          <div class="f-row">
+            <span class="dot req"></span>
+            <span class="f-label">Demand for Open Source and Offline Functionality</span>
+            <span class="chip dtype">wish</span>
+          </div>
+          <div class="d-meta" title="Engagement = post score + comments, recomputed
+            locally from the cited posts; every quote is machine-checked against
+            its source before display">2 posts ·
+            engagement 8 · seen in 1 run
+            <span class="chip src">hn</span></div>
+          <div class="d-desc">Users value productivity apps that are open source and function offline, giving them control and reliability without internet dependency.</div>
+          <div class="quote">“I built a free offline productivity app”</div>
+          <div class="d-links"><span class="lbl">Sources</span><a class="d-lnk" href="https://github.com/kks0488/dailywave" target="_blank" rel="noopener noreferrer" title="https://github.com/kks0488/dailywave" aria-label="Open the cited community post on github.com in a new tab"><span>Post 1</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://apps.apple.com/us/app/gluon-todo-project-planner/id6758938759" target="_blank" rel="noopener noreferrer" title="https://apps.apple.com/us/app/gluon-todo-project-planner/id6758938759" aria-label="Open the cited community post on apps.apple.com in a new tab"><span>App Store review 2</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a></div>
+          <div class="d-apps"><span class="d-noapp">no specific app</span></div>
+        </div></div>
+    </div></section>
+<section id="next"><div class="wrap">
+      <div class="sec-head"><h2>Next Steps</h2></div>
+      <div class="sec-sub">AI synthesis across everything above: what to build
+        and what to ship first.</div>
+      <div class="positioning"><h3>Positioning</h3>Todo List &amp; Reminder - Todoery is the all-in-one productivity app that combines ease of use with a comprehensive feature set, helping users stay organized and boost productivity. Unlike competitors, we prioritize a less aggressive paywall and reliable recurring tasks, while continuously enhancing widget functionality and customization to meet user needs.</div><div class="quad" style="margin-bottom:22px">
+        <div class="cat-head"><span class="dot req"></span>Quick wins: ship this week</div>
+        <ul style="font-size:13.5px"><li style="margin:6px 0 6px 18px">Fix Repeat Setting Disappearing</li><li style="margin:6px 0 6px 18px">Implement Dark Mode</li><li style="margin:6px 0 6px 18px">Fix Google Calendar Sync</li></ul></div>
+      <div class="feat-row">
+        <div class="prio"><b>90</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Fix Repeat Setting Disappearing</h4>
+          <p>Address the bug where repeat settings for tasks (e.g., weekly) are lost when exiting and re-entering the app, ensuring recurring tasks remain reliable.</p>
+          <div class="f-ev">Evidence: Our app: Repeat Setting Disappears (mentions 1, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag high">HIGH</span><span class="tag S">S</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>85</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Reduce Aggressive Paywall</h4>
+          <p>Adjust the paywall to be less intrusive, ensuring core features remain accessible without an immediate subscription request.</p>
+          <div class="f-ev">Evidence: Our app: Aggressive Paywall (mentions 4, seen 1x runs); Too Many Paid Features (mentions 2, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag high">HIGH</span><span class="tag L">L</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>70</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Improve Widget Functionality</h4>
+          <p>Fix the widget not working and add the requested ability to use photos as widget backgrounds, enhancing customization and usability.</p>
+          <div class="f-ev">Evidence: Our app: Widget Not Working (mentions 1, seen 1x runs); Photo Widget Background (mentions 1, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag medium">MEDIUM</span><span class="tag M">M</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>65</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Fix Google Calendar Sync</h4>
+          <p>Resolve the issue where tasks are not syncing from Google Calendar to the to-do list, ensuring seamless integration with users&#x27; existing workflows.</p>
+          <div class="f-ev">Evidence: Our app: Google Calendar Sync Not Working (mentions 1, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag medium">MEDIUM</span><span class="tag M">M</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>60</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Add Interactive Widget</h4>
+          <p>Introduce interactive widgets that allow users to mark tasks as complete or reschedule directly from the home screen, improving convenience.</p>
+          <div class="f-ev">Evidence: Competitor (Do!): Widget Lacks Interaction (mentions 1, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag medium">MEDIUM</span><span class="tag M">M</span></div>
+      </div>
+    </div></section>
+<footer><div class="wrap f-grid">
+      <div><b>Methodology.</b> Reviews from Google Play &amp; the App Store
+        (last 30 days, English-speaking storefronts), deduplicated and
+        analyzed per app by zai-glm with
+        history-aware prompts. Each app also gets a store snapshot cross-checked
+        between two independent parsers, and a community pass over Hacker News
+        whose quotes are machine-verified before display.</div>
+      <div><b>Persistence key.</b> A finding survives from run to run by slug. After 3
+        runs it is marked <span class="pill persistent">persistent</span> and
+        shows total weeks since first discovery. Every 6 weeks history is summarized
+        and merged to keep prompts lean; nothing is ever deleted.</div>
+      <div><b>Run stats.</b> 5 AI calls ·
+        6,322 in / 5,307 out tokens ·
+        2 retries.
+        
+        Generated 2026-09-18 17:57.</div>
+    </div></footer>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement, KEY = 'appintel-theme';
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+  /* ================= theme =================
+     No saved choice -> follow the system (CSS media query does the actual
+     styling; we only keep the button label in sync and react to OS flips).
+     Saved choice wins until the user clears it (never in this UI). */
+  function saved() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+  function effective() {
+    var v = saved();
+    if (v === 'light' || v === 'dark') return v;
+    return mq.matches ? 'dark' : 'light';
+  }
+  function apply() {
+    var v = saved();
+    if (v === 'light' || v === 'dark') { root.setAttribute('data-theme', v); }
+    else { root.removeAttribute('data-theme'); }
+    var btn = document.getElementById('themeBtn');
+    if (btn) {
+      var target = effective() === 'dark' ? 'light' : 'dark';
+      var sun = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+      var moon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+      btn.innerHTML = (target === 'dark' ? moon : sun) + ' ' + target.charAt(0).toUpperCase() + target.slice(1);
+      btn.setAttribute('aria-label', 'Switch to ' + target + ' mode');
+    }
+  }
+  window.cycleTheme = function () {
+    var next = effective() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    apply();
+  };
+  if (mq.addEventListener) {
+    mq.addEventListener('change', function () {
+      if (!saved()) { apply(); }        /* keep following the OS */
+    });
+  }
+  apply();
+})();
+</script>
+</body>
+</html>
