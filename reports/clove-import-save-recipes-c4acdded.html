@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>AppIntel | Competitor Feature &amp; Review Intelligence</title>
+<script>try{var v=localStorage.getItem('appintel-theme');if(v==='light'||v==='dark'){document.documentElement.setAttribute('data-theme',v);}}catch(e){}
+</script>
+<style>:root {
+    /* Warm paper ground with slate ink and a basil-green identity hue:
+       editorial, kitchen-warm, not the default admin gray. */
+    --bg: #f7f6f3; --surface: #ffffff; --surface-2: #f3f2ee;
+    --text: #1c2333; --muted: #5d6779; --border: #e6e4de;
+    --accent: #467a10; --accent-strong: #38620b; --accent-soft: #467a1012;
+    --positive: #047857; --positive-soft: #04785714;
+    --danger: #dc2626; --danger-soft: #dc262610;
+    --warn: #b45309; --warn-soft: #b4530914;
+    --cat-pos: #059669; --cat-neg: #e11d48; --cat-req: #d97706;
+    --shadow: 0 1px 2px #1c233314, 0 6px 16px -10px #1c23331f;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #467a1016, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #b453090f, transparent 55%);
+}
+:root[data-theme="dark"] {
+    /* Blue-black slate ground; elevation is explicit (surface > surface-2),
+       never an inversion of light. Identity hue = basil green (food-native),
+       status hues only ever encode state. */
+    --bg: #0b101d; --surface: #121828; --surface-2: #1a2236;
+    --text: #e8ebf5; --muted: #97a1b7; --border: #232d45;
+    --accent: #a3c76d; --accent-strong: #84cc16; --accent-soft: #65a30d2e;
+    --positive: #34d399; --positive-soft: #10b98124;
+    --danger: #fb7185; --danger-soft: #f43f5e24;
+    --warn: #fbbf24; --warn-soft: #f59e0b24;
+    --cat-pos: #34d399; --cat-neg: #fb7185; --cat-req: #fbbf24;
+    --shadow: 0 1px 2px #00000066, 0 8px 18px -12px #0000008c;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #4d7c0f3a, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #84cc161f, transparent 55%);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    /* Blue-black slate ground; elevation is explicit (surface > surface-2),
+       never an inversion of light. Identity hue = basil green (food-native),
+       status hues only ever encode state. */
+    --bg: #0b101d; --surface: #121828; --surface-2: #1a2236;
+    --text: #e8ebf5; --muted: #97a1b7; --border: #232d45;
+    --accent: #a3c76d; --accent-strong: #84cc16; --accent-soft: #65a30d2e;
+    --positive: #34d399; --positive-soft: #10b98124;
+    --danger: #fb7185; --danger-soft: #f43f5e24;
+    --warn: #fbbf24; --warn-soft: #f59e0b24;
+    --cat-pos: #34d399; --cat-neg: #fb7185; --cat-req: #fbbf24;
+    --shadow: 0 1px 2px #00000066, 0 8px 18px -12px #0000008c;
+    --hero-grad: radial-gradient(1200px 420px at 15% -10%, #4d7c0f3a, transparent 60%),
+                 radial-gradient(900px 380px at 95% -20%, #84cc161f, transparent 55%);
+} }
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter,
+               "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  font-size: 15px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  transition: background .25s ease, color .25s ease;
+}
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- nav ---------- */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner { display: flex; align-items: center; gap: 18px; height: 56px; }
+.brand { font-weight: 700; letter-spacing: -.02em; font-size: 15px; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; flex: 1; overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  color: var(--muted); font-size: 13px; font-weight: 500;
+  padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+}
+.nav-links a:hover { color: var(--text); background: var(--surface-2); text-decoration: none; }
+#themeBtn {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  min-height: 34px; min-width: 34px; justify-content: center;
+}
+#themeBtn:hover { border-color: var(--accent); }
+#themeBtn svg { flex: none; }
+
+/* ---------- hero ---------- */
+.hero { background: var(--hero-grad); border-bottom: 1px solid var(--border); }
+.hero-inner { padding: 46px 24px 34px; }
+h1 { font-size: 30px; font-weight: 800; letter-spacing: -.03em; line-height: 1.15; }
+.hero-meta { color: var(--muted); margin-top: 8px; font-size: 13.5px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; margin-top: 26px; }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.kpi b { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.kpi span { color: var(--muted); font-size: 12px; font-weight: 500; }
+
+/* ---------- "this week vs last run" box (under KPI strip) ---------- */
+.diffbox {
+  margin-top: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 16px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+}
+.diffbox.flat {
+  color: var(--muted); font-size: 13px; gap: 9px; align-items: center;
+}
+.diffbox.flat b { color: var(--text); }
+.diff-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.diff-title {
+  font-size: 11.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); cursor: help; white-space: nowrap;
+}
+.diff-sum { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.diff-sum b { font-size: 15px; font-weight: 800; }
+.diff-sum .c-new { color: var(--accent); }
+.diff-sum .c-pers { color: var(--warn); }
+.diff-sum .c-res { color: var(--positive); }
+.diff-sum .sep { margin: 0 7px; opacity: .55; }
+.diff-chips { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.d-chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+  font-weight: 600; color: var(--text); cursor: help; max-width: 100%;
+}
+.d-chip i { font-style: normal; color: var(--muted); font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.d-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.d-chip.new::before { background: var(--accent); }
+.d-chip.pers::before { background: var(--warn); }
+.d-chip.res::before { background: var(--positive); }
+.d-chip.more { color: var(--muted); cursor: default; }
+.d-chip.more::before { display: none; }
+
+/* ---------- thin-sample flag ---------- */
+.chip.thin-chip {
+  color: var(--warn); background: var(--warn-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--warn) 38%, var(--border));
+}
+.thin-note {
+  font-size: 12.5px; color: var(--muted); background: var(--warn-soft);
+  border-radius: 9px; padding: 8px 12px; margin: 2px 0 14px;
+}
+.thin-note b { color: var(--warn); }
+
+/* ---------- momentum strip (store metadata) ---------- */
+.momentum { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip.mv { font-size: 12px; padding: 3px 9px; }
+.chip.mv.up { color: var(--positive); background: var(--positive-soft);
+  border-color: color-mix(in srgb, var(--positive) 30%, var(--border)); }
+
+/* ---------- version quality block ---------- */
+.vblock { margin-top: 12px; border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface-2); padding: 12px 13px; }
+.vb-head { display: flex; align-items: center; gap: 10px; justify-content: space-between;
+  margin-bottom: 8px; }
+.vtable table { width: 100%; max-width: 460px; min-width: 0; border-collapse: collapse; font-size: 12.5px; }
+.vtable th, .vtable td { padding: 5px 8px; border-top: 1px solid var(--border); text-align: left; }
+.vtable th:nth-child(n+2), .vtable td:nth-child(n+2) { text-align: right; }
+.vtable thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); border-top: 0; background: transparent; }
+.vtable tr.latest td { background: var(--accent-soft); }
+.lat { font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--accent);
+  vertical-align: 1px; }
+.chip.v-reg { color: var(--danger); background: var(--danger-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--danger) 38%, var(--border)); }
+.chip.v-imp { color: var(--positive); background: var(--positive-soft); cursor: help;
+  border-color: color-mix(in srgb, var(--positive) 30%, var(--border)); }
+.chip.v-stable { color: var(--muted); cursor: help; }
+.chip.v-low { color: var(--muted); font-style: italic; cursor: help; }
+.v-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+/* ---------- community demand ---------- */
+.demand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.d-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.d-card .f-row { align-items: center; }
+.chip.dtype { font-size: 11px; font-weight: 800; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--muted); }
+.d-meta { font-size: 12px; color: var(--muted); margin-top: 7px; cursor: help; }
+.chip.src { font-size: 11px; padding: 1px 8px; margin-left: 6px;
+  background: var(--surface-2); text-transform: uppercase; letter-spacing: .05em; }
+.d-desc { font-size: 13px; color: var(--text); margin-top: 6px; }
+.d-apps { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; align-items: center; }
+.chip.d-app { font-size: 12px; padding: 2px 9px; color: var(--accent);
+  background: var(--accent-soft); border-color: transparent; }
+.d-noapp { font-size: 11.5px; color: var(--muted); font-style: italic; }
+/* provenance: clickable chips that open the ACTUAL cited community posts */
+.d-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.d-links .lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+a.d-lnk { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px;
+  font-weight: 600; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease; }
+a.d-lnk:hover { color: var(--accent); text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+a.d-lnk svg { flex: none; opacity: .7; }
+
+/* ---------- sections ---------- */
+section { padding: 42px 0 8px; scroll-margin-top: 64px; }
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+.sec-head h2 { font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
+.sec-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; max-width: 780px; }
+.sec-sub b { color: var(--text); }
+
+/* ---------- app cards + icons ---------- */
+.app-head { display: flex; align-items: center; gap: 12px; }
+.app-icon-wrap { position: relative; width: 44px; height: 44px; flex: none; }
+.app-icon-wrap .app-icon { position: absolute; inset: 0; width: 100%; height: 100%; }
+.app-icon {
+  width: 44px; height: 44px; border-radius: 12px; object-fit: cover; background: var(--surface-2);
+  border: 1px solid var(--border); flex: none; display: block;
+}
+img.app-icon { z-index: 1; }
+.app-icon.avatar {
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .02em; border: 0;
+}
+.app-title { font-weight: 700; font-size: 15.5px; letter-spacing: -.01em; }
+.app-sub { color: var(--muted); font-size: 12.5px; }
+.badge-own {
+  font-size: 11px; font-weight: 800; letter-spacing: .09em; color: var(--accent);
+  background: var(--accent-soft); border-radius: 6px; padding: 3px 7px; margin-left: auto;
+}
+.app-stats { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+.app-stats b { color: var(--text); font-weight: 700; }
+.stars { color: var(--warn); letter-spacing: 1px; }
+/* store listings: slim chips linking each app to its Play / App Store page */
+.store-links { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 10px; }
+.app-head + .app-stats + .store-links { margin-top: 9px; }
+a.store-lnk { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px;
+  font-weight: 700; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease; }
+a.store-lnk:hover { color: var(--accent); text-decoration: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--accent-soft); }
+a.store-lnk svg { flex: none; opacity: .8; }
+
+/* ---------- finding blocks ---------- */
+.cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.cat-block {
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px 15px;
+  background: var(--surface-2);
+}
+/* inside the tinted block the quote needs the inverse surface to read as a chip */
+.cat-block .quote { background: var(--surface); }
+.cat-head {
+  display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 9px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot.pos { background: var(--positive); } .dot.neg { background: var(--danger); }
+.dot.req { background: var(--warn); }
+.finding { padding: 8px 0; border-top: 1px solid var(--border); }
+.finding:first-of-type { border-top: 0; padding-top: 2px; }
+/* competitor cat blocks match the spotlight rhythm */
+.cats .finding { padding: 10px 0; }
+.cats .f-label { font-size: 14px; }
+.f-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.f-label { font-weight: 600; font-size: 13.5px; flex: 1; min-width: 120px; }
+.f-mentions { color: var(--muted); font-size: 12px; white-space: nowrap; cursor: help; }
+.pill {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+}
+.pill.persistent { color: var(--accent); background: var(--accent-soft); }
+.pill.hot { color: var(--danger); background: var(--danger-soft); }
+.meter { height: 3px; border-radius: 2px; background: var(--surface); overflow: hidden; margin-top: 5px; }
+.meter i { display: block; height: 100%; border-radius: 2px; }
+.meter i.pos { background: var(--cat-pos); }
+.meter i.neg { background: var(--cat-neg); }
+.meter i.req { background: var(--cat-req); }
+.quote {
+  margin-top: 6px; font-size: 12.5px; color: var(--muted); font-style: italic;
+  background: var(--surface-2); border-radius: 8px; padding: 7px 10px;
+}
+.empty { color: var(--muted); font-size: 12.5px; font-style: italic; padding: 4px 0 2px; }
+
+/* ---------- spotlight quadrants ---------- */
+.quad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.quad {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 18px; box-shadow: var(--shadow);
+}
+.quad .cat-head { font-size: 12.5px; margin-bottom: 12px; }
+.quad .finding { padding: 10px 0; }
+.quad .f-label { font-size: 14px; }
+
+/* ---------- matrix ---------- */
+.table-wrap {
+  overflow-x: auto; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--surface); box-shadow: var(--shadow); -webkit-overflow-scrolling: touch;
+  padding: 6px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.table-wrap::-webkit-scrollbar { height: 8px; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 680px; }
+th, td { padding: 11px 14px; text-align: left; border-top: 1px solid var(--border); }
+thead th {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+  border-top: 0; background: var(--surface-2); font-weight: 700;
+}
+td.feat { font-weight: 600; max-width: 300px; }
+.mk { font-weight: 700; font-size: 13px; }
+.mk.yes { color: var(--positive); } .mk.no { color: var(--muted); font-weight: 500; }
+.mk.part { color: var(--warn); }
+tr.opp td.own { background: var(--danger-soft); }
+tr.opp td.own.mk.no { color: var(--danger); font-weight: 800; }
+th.own { color: var(--text); }
+.opp-tag { font-size: 11px; font-weight: 800; color: var(--danger); letter-spacing: .05em; }
+
+/* ---------- chips ---------- */
+.chip {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  border: 1px solid var(--border); background: var(--surface);
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+
+/* ---------- strategy ---------- */
+.feat-row {
+  display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: start;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 15px 17px; box-shadow: var(--shadow); margin-bottom: 11px;
+}
+.prio { text-align: center; }
+.prio b { font-size: 19px; font-weight: 800; color: var(--accent); display: block; line-height: 1.1; }
+.prio span { font-size: 11px; font-weight: 700; letter-spacing: .09em; color: var(--muted); }
+.feat-row h4 { font-size: 14.5px; font-weight: 700; letter-spacing: -.01em; }
+.feat-row p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.f-ev { font-size: 12px; color: var(--muted); margin-top: 7px; }
+.tag-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 6px; letter-spacing: .03em; }
+.tag.high { color: var(--positive); background: var(--positive-soft); }
+.tag.med  { color: var(--warn); background: var(--warn-soft); }
+.tag.low  { color: var(--muted); background: var(--surface-2); }
+.positioning {
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border-radius: 16px;
+  padding: 18px 20px; box-shadow: var(--shadow); font-size: 14.5px; line-height: 1.6;
+  margin-bottom: 22px;
+}
+.positioning h3 { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
+
+details.competitor { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; }
+details.competitor > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px; font-weight: 700; font-size: 15px; min-height: 52px;
+}
+details.competitor > summary::-webkit-details-marker { display: none; }
+details.competitor > summary .app-icon-wrap { width: 38px; height: 38px; }
+details.competitor > summary .app-icon { border-radius: 10px; font-size: 13px; }
+details.competitor > summary .chev { margin-left: auto; color: var(--muted); transition: transform .2s; flex: none; }
+details.competitor > summary:focus-visible { outline-offset: -2px; }
+details.competitor[open] > summary .chev { transform: rotate(90deg); }
+details.competitor > .body { padding: 4px 18px 18px; border-top: 1px solid var(--border); }
+
+footer { margin-top: 52px; border-top: 1px solid var(--border); padding: 26px 0 40px; color: var(--muted); font-size: 12.5px; }
+footer b { color: var(--text); }
+.f-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  .nav-inner { gap: 10px; height: 52px; }
+  .hero-inner { padding: 30px 16px 24px; }
+  h1 { font-size: 25px; }
+  .hero-meta { font-size: 12px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 18px; }
+  .kpi { padding: 11px 12px; border-radius: 12px; }
+  .kpi b { font-size: 17px; }
+  .kpi span { font-size: 12px; }
+  .diffbox { padding: 11px 13px; border-radius: 12px; gap: 6px 12px; }
+  .diff-sum { white-space: normal; }
+  .diff-sum .sep { margin: 0 5px; }
+  .d-chip { font-size: 12px; max-width: 100%; }
+  .d-chip i { max-width: 130px; }
+  .thin-note { font-size: 12px; }
+  section { padding: 30px 0 6px; }
+  .sec-head h2 { font-size: 18px; }
+  .sec-sub { font-size: 12.5px; margin-bottom: 16px; }
+  .cats, .quad-grid { grid-template-columns: 1fr; }
+  .quad { padding: 14px; }
+  .feat-row { grid-template-columns: 52px 1fr; gap: 12px; }
+  .feat-row .tag-row { grid-column: 1 / -1; }
+  .momentum { gap: 5px; }
+  .chip.mv { font-size: 12px; padding: 2px 8px; }
+  .vblock { padding: 10px 11px; }
+  .vtable th, .vtable td { padding: 4px 6px; }
+  .demand-grid { grid-template-columns: 1fr; gap: 10px; }
+  .d-card { padding: 12px 13px; }
+  .d-card .f-label { font-size: 13px; }
+}
+@media (max-width: 460px) {
+  .brand { font-size: 13px; }
+  .nav-links a { padding: 5px 8px; font-size: 12px; }
+  #themeBtn { padding: 5px 10px; font-size: 11.5px; }
+  details.competitor > summary { padding: 13px 14px; font-size: 14px; gap: 10px; }
+  details.competitor > .body { padding: 4px 14px 14px; }
+  .app-icon-wrap { width: 38px; height: 38px; }
+  .app-icon.avatar { font-size: 13px; }
+  .f-label { font-size: 13px; }
+  .feat-row { padding: 12px 13px; }
+  th, td { padding: 9px 10px; }
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap nav-inner">
+      <div class="brand">App<span>Intel</span></div>
+      <div class="nav-links"><a href="#spotlight">Your App</a><a href="#competitors">Competitors</a><a href="#matrix">Gaps</a><a href="#community">Demand</a><a href="#next">Next Steps</a></div>
+      <button id="themeBtn" onclick="cycleTheme()" type="button"></button>
+    </div></nav>
+<div class="hero"><div class="wrap hero-inner">
+      <h1>Clove: Import & Save Recipes: Feature &amp; Review Intelligence</h1>
+      <div class="hero-meta">Run 2026-09-21 &nbsp;·&nbsp; last 30 days,
+        refreshed every 30 days &nbsp;·&nbsp; English-language storefronts
+        </div>
+      <div class="kpis">
+        <div class="kpi"><b>345</b><span>reviews in the past 30 days</span></div>
+        <div class="kpi"><b>5</b><span>competitors tracked</span></div>
+        <div class="kpi"><b>53</b><span>feature signals tracked</span></div>
+        <div class="kpi"><b>6</b><span>releases tracked (90d)</span></div></div>
+      <div class="diffbox flat"><span class="dot req"></span><b>Baseline run.</b> Shift tracking starts next run - this report sets the reference point.</div>
+    </div></div>
+<section id="spotlight"><div class="wrap">
+      <div class="sec-head"><h2>Your App</h2></div>
+      <div class="sec-sub">Signals from your last 30 days of reviews.
+        Findings seen in 3+ runs are marked <span class="pill persistent">persistent</span>.</div>
+      <div class="app-head">
+      <span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#b45309,#92400e)">CI</span><img class="app-icon" loading="lazy" src="https://play-lh.googleusercontent.com/jV7_-HiyYNi7D-PjShRy9nzPgkbMBSJ4klKpGoHMGfllr9UvK3jSYo54SrR-h660PeR2tkZajSD116lYuaEN" alt="Clove: Import &amp; Save Recipes app icon" onerror="this.remove()"></span>
+      <div>
+        <div class="app-title">Clove: Import &amp; Save Recipes</div>
+        <div class="app-sub">Clove Kitchen</div>
+      </div>
+      <span class="badge-own">YOUR APP</span>
+    </div>
+    <div class="app-stats">
+      <span>★★★★★ <b>4.9</b>/5</span><span><b>139</b> reviews in the past 30 days</span>
+        <span><b style="color:var(--danger)">2</b> neg ·
+               <b style="color:var(--positive)">137</b> pos</span><span><b>19</b> markets · most active: US, RU, ES</span></div>
+    <div class="store-links"><a class="store-lnk" href="https://play.google.com/store/apps/details?id=kitchen.clove.app" target="_blank" rel="noopener noreferrer" title="Open Clove: Import &amp; Save Recipes on Google Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Google Play</span></a><a class="store-lnk" href="https://apps.apple.com/app/id6741995783" target="_blank" rel="noopener noreferrer" title="Open Clove: Import &amp; Save Recipes on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div>
+    
+    <div class="vblock">
+      <div class="vb-head"><span class="cat-head" style="margin:0">Version quality</span>
+        <span class="chip v-imp" title="Negative-review share on the latest version dropped to 0.6x or less of the older-version baseline.">improved</span></div>
+      <div class="vtable"><table>
+        <thead><tr><th>Version</th><th>Reviews</th><th>Avg</th><th>Negative</th></tr></thead>
+        <tbody><tr class="latest"><td>v1.63.0 <span class=lat>LATEST</span></td><td>5</td><td>4.8</td><td>0%</td></tr><tr class=""><td>v1.62.0</td><td>25</td><td>4.8</td><td>4%</td></tr><tr class=""><td>v1.59.0</td><td>29</td><td>4.9</td><td>0%</td></tr></tbody>
+      </table></div><div class="v-note">A few users on the latest version reported experiencing crashes or inability to log into the app.</div>
+    </div>
+      <div class="quad-grid" style="margin-top:16px"><div class="quad">
+          <div class="cat-head"><span class="dot pos"></span>Loved</div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Social Media Video Import</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 30 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">30 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“As soon as I find a recipe on Instagram or TikTok, I can send it to Clove and it writes out the instructions for me.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Grocery List Generation</span>
+        
+        <span class="f-mentions" title="Mentioned by 12 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">12 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:40%"></i></div>
+      <div class="quote">“The add to groceries feature is bombastic xxx”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Recipe Organization &amp; Folders</span>
+        
+        <span class="f-mentions" title="Mentioned by 11 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">11 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:36%"></i></div>
+      <div class="quote">“I can save all my recipes from different social media platforms and categorize them to keep them nice and organized.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Completely Free to Use</span>
+        
+        <span class="f-mentions" title="Mentioned by 10 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">10 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:33%"></i></div>
+      <div class="quote">“This app truly does it all! And its free!!”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Ingredient Matching &amp; Substitution</span>
+        
+        <span class="f-mentions" title="Mentioned by 6 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">6 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:20%"></i></div>
+      <div class="quote">“It matches what you have to the recipes so you dont have to remember which ingredients go with which recipe!”</div>
+    </div></div><div class="quad">
+          <div class="cat-head"><span class="dot neg"></span>Frustrations</div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Login and Crash Issues</span>
+        
+        <span class="f-mentions" title="Mentioned by 3 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">3 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“impossible to log in even after signing up”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">High Subscription Cost</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:33%"></i></div>
+      <div class="quote">“The primary issue is the premium cost, which at $99/yr puts them more than double or triple the price”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Incomplete Recipe Translation</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:33%"></i></div>
+      <div class="quote">“I would like when I want to translate a recipe to translate EVERYTHING not some things”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Limitations in Manual Recipe Creation</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:33%"></i></div>
+      <div class="quote">“I do wish it would let you add recipes from recipe cards and create your own instead of creating one for you.”</div>
+    </div></div><div class="quad">
+          <div class="cat-head"><span class="dot req"></span>Requested</div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Browse / Explore Feed</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“the only thing missing is a simple browse option. I find myself going back to my old recipe app because I can just scroll”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Recipe Source Attribution</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“Would love to have a space on the page where I can acknowledge the recipe source as well.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Cyclic Meal Planning Menus</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“add an impression that allows to copy the same menus that repeat cyclically every week”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Support Non-Cooking Hobbies</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“Сделайте пожалуйста для вязальщиц и для мам такие приложения чтобы можно было бы сохранять с инстаграма уроки”</div>
+    </div></div></div>
+    </div></section>
+<section id="competitors"><div class="wrap">
+      <div class="sec-head"><h2>Competitor Snapshots</h2></div>
+      <div class="sec-sub">Click a card to expand: the same signal breakdown as
+        your app, with quotes, plus store momentum - current version, release
+        cadence, ratings growth - and version-quality verdicts.</div>
+      <details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#1d4ed8,#1e40af)">TA</span><img class="app-icon" loading="lazy" src="https://play-lh.googleusercontent.com/KMYOuO00_ja5gXEnnueG8XwCKHlRDHbGGKJQqcQ-ptTuhCQCvTC0sI5HEvfV1K9gkXtTFXA2aBZcqvHYWPXLyH0" alt="Tasty app icon" onerror="this.remove()"></span><span>Tasty</span>
+            <span class="app-sub"><span class="stars">★★★★★</span> 4.7 · 36 reviews in the past 30 days</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="store-links"><a class="store-lnk" href="https://play.google.com/store/apps/details?id=com.buzzfeed.tasty" target="_blank" rel="noopener noreferrer" title="Open Tasty on Google Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Google Play</span></a><a class="store-lnk" href="https://apps.apple.com/app/id841415461" target="_blank" rel="noopener noreferrer" title="Open Tasty on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Step-by-Step Instructions &amp; Videos</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 6 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">6 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“makes following recipes so much easier with step by step instructions and videos!”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Easy &amp; Diverse Recipes</span>
+        
+        <span class="f-mentions" title="Mentioned by 5 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">5 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:83%"></i></div>
+      <div class="quote">“great easy to follow recipes. diverse recipes that are authentic to the cultures they represent.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Save &amp; Organize Recipes</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:33%"></i></div>
+      <div class="quote">“I love the fact that you can store the recipes even if you haven&#x27;t tried them”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Login &amp; Account Issues</span>
+        
+        <span class="f-mentions" title="Mentioned by 3 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">3 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“I&#x27;m starting to get really annoyed that it keeps signing me out every time I get on”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Excessive Push Notifications</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:33%"></i></div>
+      <div class="quote">“I get constant push notifications no matter what I change in settings”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Imprecise Search Results</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:33%"></i></div>
+      <div class="quote">“I don&#x27;t want chicken recipes if I type in pork chops”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="empty">Nothing significant this window</div>
+    </div></div></div>
+        </details><details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#1d4ed8,#1e40af)">R-</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/0e/07/d7/0e07d7ff-6660-571e-0a4d-fd1c168ddfd1/AppIconGlass-0-1x_U007epad-0-1-0-85-220-0.png/512x512bb.jpg" alt="RecipeBox - Save Your Recipes! app icon" onerror="this.remove()"></span><span>RecipeBox - Save Your Recipes!</span>
+            <span class="app-sub"><span class="stars">★★★★★</span> 4.7 · 9 reviews in the past 30 days</span><span class="chip thin-chip" title="Only 9 reviews found in the past 30 days. With a sample this small the signals on this card are directional and can over- or under-state what users actually feel.">thin sample · 9</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="thin-note"><b>Thin data.</b> Only 9 reviews in the past 30 days - treat these signals as directional, not definitive.</div><div class="store-links"><a class="store-lnk" href="https://apps.apple.com/app/id1433840494" target="_blank" rel="noopener noreferrer" title="Open RecipeBox - Save Your Recipes! on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Easy Recipe Saving</span>
+        
+        <span class="f-mentions" title="Mentioned by 3 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">3 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“Great app, Ive tried so many similar and none have worked for me like this one.”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Unexpected Paywall and High Annual Fees</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 5 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">5 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“This app used to be free and it was very convenient and easy to use however, now theres an annual fee of almost $60 which is ridiculous”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Video Transcription Failures</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:20%"></i></div>
+      <div class="quote">“It says unable to transcribe most of the time.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">App Glitches and UI Bugs</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:20%"></i></div>
+      <div class="quote">“im finding that the photos arent loading on some recipes and also that all the recipes Ive added in the past month or so dont come up”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Recipe Counter View</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“I just wish there was some way to see how many recipes Ive saved over the years !”</div>
+    </div>
+    </div></div></div>
+        </details><details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#047857,#065f46)">MM</span><img class="app-icon" loading="lazy" src="https://play-lh.googleusercontent.com/cO57CczN6fYzawbW24QrrJoazqJgwIBMR9z0UTG8CfrFH7Q4QwkR0yClqOag0YF4jiK2ZCIvvFHpYHhFnotC0qE" alt="Mealime Meal Plans &amp; Recipes app icon" onerror="this.remove()"></span><span>Mealime Meal Plans &amp; Recipes</span>
+            <span class="app-sub"><span class="stars">★★★★★</span> 4.6 · 82 reviews in the past 30 days</span><span class="chip v-reg" title="Per-version quality verdict computed from raw reviews: the latest version&#x27;s negative-review share vs older versions. Details inside.">possible regression</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="store-links"><a class="store-lnk" href="https://play.google.com/store/apps/details?id=com.mealime" target="_blank" rel="noopener noreferrer" title="Open Mealime Meal Plans &amp; Recipes on Google Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Google Play</span></a><a class="store-lnk" href="https://apps.apple.com/app/id1079999103" target="_blank" rel="noopener noreferrer" title="Open Mealime Meal Plans &amp; Recipes on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="vblock">
+      <div class="vb-head"><span class="cat-head" style="margin:0">Version quality</span>
+        <span class="chip v-reg" title="Negative-review share on the latest version is at least 1.5x the share on older versions (min 5 reviews). Computed locally from raw review data - the AI only names the affected area.">possible regression</span></div>
+      <div class="vtable"><table>
+        <thead><tr><th>Version</th><th>Reviews</th><th>Avg</th><th>Negative</th></tr></thead>
+        <tbody><tr class="latest"><td>v4.21.35 <span class=lat>LATEST</span></td><td>65</td><td>3.4</td><td>40%</td></tr><tr class=""><td>v4.21.34</td><td>14</td><td>4.4</td><td>21%</td></tr><tr class=""><td>v4.21.22</td><td>1</td><td>5.0</td><td>0%</td></tr></tbody>
+      </table></div><div class="v-note">The latest version introduces app shutdown and forced transition to a grocery-chain ecosystem (Albertsons/Meals Hub), causing widespread backlash from international and non-local users who lose access.</div>
+    </div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Easy meal planning and grocery check-off lists</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 25 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">25 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“easy to use. love that it gives grocery check off list”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Delicious recipes and dietary variety</span>
+        
+        <span class="f-mentions" title="Mentioned by 14 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">14 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:56%"></i></div>
+      <div class="quote">“Quite literally some of the best food I&#x27;ve ever had. Thank you for helping me save money and get healthy”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Seamless grocery app delivery integration</span>
+        
+        <span class="f-mentions" title="Mentioned by 5 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">5 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:20%"></i></div>
+      <div class="quote">“I was able to taylor it to my dietary needs and have the app interface with the Walmart app seamlessly to order and have my groceries delive”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Clean, ADHD-friendly cooking interface</span>
+        
+        <span class="f-mentions" title="Mentioned by 3 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">3 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:12%"></i></div>
+      <div class="quote">“My ADHD brain particularly enjoys the UI when cooking! I love that the screens are simple, uncluttered and straight forward.”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">App shutdown and forced migration to grocery store app</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 38 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">38 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“App is shutting down and moving to a different app. That app requires a grocery store to be selected and none of them serve our geographic l”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">App crashes and server connection loss</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:8%"></i></div>
+      <div class="quote">“I&#x27;ve been using this app for years, but in recent months it continuously crashes and loses its serve”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Saved recipes disappearing</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:8%"></i></div>
+      <div class="quote">“One of my saved recipes that I took time to make, doesn&#x27;t show up in &#x27;My Recipes&#x27;. Seems like a design flaw.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Timers reset when changing steps</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:8%"></i></div>
+      <div class="quote">“I appreciate the timer feature but found if you move to the next step, the timer is lost so I stick to my kitchen timer”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Input ingredients on hand</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“Doesn&#x27;t let user input ingredients on hand”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">DoorDash grocery integration</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“I don&#x27;t use the auto grocery ordering option because it doesn&#x27;t integrate with Door Dash. Hoping they add this and a tablet mode.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Dedicated tablet mode</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“Hoping they add this and a tablet mode.”</div>
+    </div>
+    </div></div></div>
+        </details><details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#b45309,#92400e)">RK</span><img class="app-icon" loading="lazy" src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d1/0e/dc/d10edc59-6a70-b25c-d9f3-264b99e30cf5/AppIconGlass-0-0-1x_U007epad-0-1-0-sRGB-85-220.png/512x512bb.jpg" alt="Recipe Keeper Box - OrganizEat app icon" onerror="this.remove()"></span><span>Recipe Keeper Box - OrganizEat</span>
+            <span class="app-sub"><span class="stars">★★★★★</span> 4.8 · 17 reviews in the past 30 days</span><span class="chip thin-chip" title="Only 17 reviews found in the past 30 days. With a sample this small the signals on this card are directional and can over- or under-state what users actually feel.">thin sample · 17</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="thin-note"><b>Thin data.</b> Only 17 reviews in the past 30 days - treat these signals as directional, not definitive.</div><div class="store-links"><a class="store-lnk" href="https://apps.apple.com/app/id1059211083" target="_blank" rel="noopener noreferrer" title="Open Recipe Keeper Box - OrganizEat on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Easy Web Import &amp; Scanning</span>
+        
+        <span class="f-mentions" title="Mentioned by 4 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">4 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“Makes organizing recipes so easy! Can easily import from online sources or simply take a picture.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Cross-Device Sync &amp; Sharing</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:50%"></i></div>
+      <div class="quote">“Have the app on my iPhone and 2 iPads so I can access them anytime and anywhere. Thank you so much!!”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Custom Categories &amp; Organization</span>
+        
+        <span class="f-mentions" title="Mentioned by 2 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">2 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:50%"></i></div>
+      <div class="quote">“It has helped me to get rid of stacks of paper and organize my recipes.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Helpful Customer Support</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:25%"></i></div>
+      <div class="quote">“Rachel and her team were quick and generous to set me up with my new email address.”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">AI Sorting Issues &amp; Paywalls</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“The AI sorting is constantly wrong, they won&#x27;t bring back the toggle to just have it list the ingredients alphabetically, they put more thin”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Grocery List Language Glitch</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“suddenly my shopping list is suddenly in a different language! English in my recipe, Spanish when I put it in my grocery list.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Photo Count Limitations</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“If it let me save more photos, it would be 5-stars.”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Nutrition Information Calculation</span>
+        
+        <span class="f-mentions" title="Mentioned by 1 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">1 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“the one thing that would make it better would be to calculate nutrition info.”</div>
+    </div>
+    </div></div></div>
+        </details><details class="competitor">
+          <summary><span class="app-icon-wrap"><span class="app-icon avatar" style="background:linear-gradient(135deg,#4d7c0f,#3f6212)">E-</span><img class="app-icon" loading="lazy" src="https://play-lh.googleusercontent.com/qyW1RFYfRAGygMOfO8pTQTr7IuJo_-GlCqy2ALEsfTOGodHHaK6X7yJgUp3oM-mAJYGBwZHwdEeZSGb4pHB3zDk" alt="eMeals - Meal Planning Recipes app icon" onerror="this.remove()"></span><span>eMeals - Meal Planning Recipes</span>
+            <span class="app-sub"><span class="stars">★★★★☆</span> 3.9 · 62 reviews in the past 30 days</span><span class="chip v-reg" title="Per-version quality verdict computed from raw reviews: the latest version&#x27;s negative-review share vs older versions. Details inside.">possible regression</span><svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></summary>
+          <div class="body"><div class="store-links"><a class="store-lnk" href="https://play.google.com/store/apps/details?id=com.emeals" target="_blank" rel="noopener noreferrer" title="Open eMeals - Meal Planning Recipes on Google Play"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><span>Google Play</span></a><a class="store-lnk" href="https://apps.apple.com/app/id1079999103" target="_blank" rel="noopener noreferrer" title="Open eMeals - Meal Planning Recipes on the App Store"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.394-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.56-1.702"/></svg><span>App Store</span></a></div><div class="vblock">
+      <div class="vb-head"><span class="cat-head" style="margin:0">Version quality</span>
+        <span class="chip v-reg" title="Negative-review share on the latest version is at least 1.5x the share on older versions (min 5 reviews). Computed locally from raw review data - the AI only names the affected area.">possible regression</span></div>
+      <div class="vtable"><table>
+        <thead><tr><th>Version</th><th>Reviews</th><th>Avg</th><th>Negative</th></tr></thead>
+        <tbody><tr class=""><td>v4.21.35</td><td>42</td><td>3.3</td><td>43%</td></tr><tr class="latest"><td>v7.0.0 <span class=lat>LATEST</span></td><td>9</td><td>2.1</td><td>78%</td></tr><tr class=""><td>v6.6.1</td><td>4</td><td>3.5</td><td>50%</td></tr></tbody>
+      </table></div><div class="v-note">The latest version introduces a severe regression as the app is being shut down and forced into an Albertsons grocery chain ecosystem, breaking access for international and non-local users.</div>
+    </div><div class="cats"><div class="cat-block">
+      <div class="cat-head"><span class="dot pos"></span>Loved</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Delicious Recipes and Variety</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 16 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">16 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:100%"></i></div>
+      <div class="quote">“This app got me to cook at home. It solves every facet of the whats for dinner problem, with great tasting recipes”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Automated Grocery Lists and Time Saving</span>
+        
+        <span class="f-mentions" title="Mentioned by 12 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">12 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="pos" style="width:75%"></i></div>
+      <div class="quote">“Very convenient and saves time for the most part as far as making a grocery list and shopping.”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot neg"></span>Frustrations</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">App Shutting Down Due to Acquisition</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 28 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">28 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:100%"></i></div>
+      <div class="quote">“RIP to a great app My beloved Mealime is sunsetting at the end of this month and I am in shambles.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Slow Performance and Glitches</span>
+        
+        <span class="f-mentions" title="Mentioned by 6 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">6 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:21%"></i></div>
+      <div class="quote">“Worst experience ever, this app LITERALLY NEVER open, it just contines to show me the spinning wheel like it&#x27;s loading CONSTANTLY.”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Aggressive Paywall and Subscription Issues</span>
+        
+        <span class="f-mentions" title="Mentioned by 4 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">4 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="neg" style="width:14%"></i></div>
+      <div class="quote">“paying an app to get recipes you can find yourself online ??”</div>
+    </div>
+    </div><div class="cat-block">
+      <div class="cat-head"><span class="dot req"></span>Requested</div>
+      <div class="finding">
+      <div class="f-row">
+        <span class="f-label">Keep Standalone App Running</span>
+        <span class="pill hot">TOP</span>
+        <span class="f-mentions" title="Mentioned by 12 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">12 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:100%"></i></div>
+      <div class="quote">“If theres any way to keep this app up and running please do!”</div>
+    </div><div class="finding">
+      <div class="f-row">
+        <span class="f-label">Support Outside the US / Local Stores</span>
+        
+        <span class="f-mentions" title="Mentioned by 8 review(s) in the latest window. Detected in 1 of your pipeline runs; a finding seen in 3+ runs is flagged persistent and shows its age in weeks.">8 mentions
+          &middot; seen in 1 run</span>
+      </div>
+      <div class="meter"><i class="req" style="width:66%"></i></div>
+      <div class="quote">“Please keep the app going in countries that dont even have an Albertsons.”</div>
+    </div>
+    </div></div></div>
+        </details>
+    </div></section>
+<section id="matrix"><div class="wrap">
+      <div class="sec-head"><h2>Opportunity Matrix</h2></div>
+      <div class="sec-sub">Features users explicitly <b>love</b> elsewhere;
+        rows marked <span class="opp-tag">GAP</span> are missing from your app.</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Feature users love</th><th class="own">Your app</th><th class="">Tasty</th><th class="">RecipeBox - Save Your Recipes!</th><th class="">Mealime Meal Plans &amp; Recipes</th><th class="">Recipe Keeper Box - OrganizEat</th><th class="">eMeals - Meal Planning Recipes</th></tr></thead>
+        <tbody><tr class="">
+          <td class="feat">Grocery List Generation</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk yes">✓</td></tr><tr class="opp">
+          <td class="feat">Delicious recipes and dietary variety <span class="opp-tag">GAP</span></td><td class="mk no own">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk yes">✓</td><td class="mk no">✗</td><td class="mk yes">✓</td></tr><tr class="">
+          <td class="feat">Social Media Video Import</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Recipe Organization &amp; Folders</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Completely Free to Use</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Ingredient Matching &amp; Substitution</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Measurement Conversion &amp; Servings</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr><tr class="">
+          <td class="feat">Screen Stays Awake While Cooking</td><td class="mk yes own">✓</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td><td class="mk no">✗</td></tr></tbody>
+      </table></div>
+    </div></section>
+<section id="community"><div class="wrap">
+      <div class="sec-head"><h2>Community Demand</h2></div>
+      <div class="sec-sub">What people ask for on Hacker News, beyond
+        store reviews. Hacker News: reachable. Quotes are machine-verified against
+        the source posts, and every card links to the original discussions.</div>
+      <div class="demand-grid"><div class="d-card">
+          <div class="f-row">
+            <span class="dot req"></span>
+            <span class="f-label">AI Recipe Card Generation</span>
+            <span class="chip dtype">wish</span>
+          </div>
+          <div class="d-meta" title="Engagement = post score + comments, recomputed
+            locally from the cited posts; every quote is machine-checked against
+            its source before display">2 posts ·
+            engagement 5 · seen in 1 run
+            <span class="chip src">hn</span></div>
+          <div class="d-desc">Users want tools that use AI to convert online recipes into printable cards without clutter.</div>
+          <div class="quote">“Show HN: Tasty A.F. - Use AI to Create Printable Recipe Cards”</div>
+          <div class="d-links"><span class="lbl">Sources</span><a class="d-lnk" href="https://tastyaf.recipes/about" target="_blank" rel="noopener noreferrer" title="https://tastyaf.recipes/about" aria-label="Open the cited community post on tastyaf.recipes in a new tab"><span>Post 1</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a><a class="d-lnk" href="https://tastyaf.recipes" target="_blank" rel="noopener noreferrer" title="https://tastyaf.recipes" aria-label="Open the cited community post on tastyaf.recipes in a new tab"><span>Post 2</span><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg></a></div>
+          <div class="d-apps"><span class="chip d-app">Tasty</span></div>
+        </div></div>
+    </div></section>
+<section id="next"><div class="wrap">
+      <div class="sec-head"><h2>Next Steps</h2></div>
+      <div class="sec-sub">AI synthesis across everything above: what to build
+        and what to ship first.</div>
+      <div class="positioning"><h3>Positioning</h3>Clove is positioned as the ultimate, user-friendly recipe hub that excels at social media video import, smart grocery list generation, and flexible organization. Unlike competitors burdened by sudden shutdowns, forced migrations, or aggressive paywalls, Clove delivers a reliable, core-loved experience focused on effortlessly capturing inspiration from anywhere on the web and keeping cooks organized in the kitchen.</div><div class="quad" style="margin-bottom:22px">
+        <div class="cat-head"><span class="dot req"></span>Quick wins: ship this week</div>
+        <ul style="font-size:13.5px"><li style="margin:6px 0 6px 18px">Fix manual recipe creation limitations to allow adding recipes directly from physical cards and custom text inputs.</li><li style="margin:6px 0 6px 18px">Improve recipe translation coverage to ensure the entire recipe text is fully translated without gaps.</li><li style="margin:6px 0 6px 18px">Add a dedicated recipe source attribution field so users can properly credit where they found their recipes.</li></ul></div>
+      <div class="feat-row">
+        <div class="prio"><b>95</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Login and Crash Fixes</h4>
+          <p>Resolve critical login loops and application crashes reported immediately after account creation to stabilize the core onboarding flow.</p>
+          <div class="f-ev">Evidence: Our app: Login and Crash Issues (mentions 3, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag high">HIGH</span><span class="tag M">M</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>88</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Step-by-Step Cooking Mode &amp; Video Integration</h4>
+          <p>Implement a focused, clean step-by-step cooking interface similar to top competitors to guide users seamlessly through recipes.</p>
+          <div class="f-ev">Evidence: Tasty: Step-by-Step Instructions &amp; Videos (mentions 6, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag high">HIGH</span><span class="tag L">L</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>75</b><span>PRIORITY</span></div>
+        <div>
+          <h4>AI Recipe Card Generation</h4>
+          <p>Add support for AI-powered recipe card generation from unstructured text or notes, addressing community demand signals.</p>
+          <div class="f-ev">Evidence: Hacker News community demand: AI Recipe Card Generation (2 posts, engagement 5)</div>
+        </div>
+        <div class="tag-row"><span class="tag medium">MEDIUM</span><span class="tag M">M</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>70</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Browse and Explore Feed</h4>
+          <p>Introduce a simple discovery or browse feed so users can easily find new inspiration without relying entirely on external social links.</p>
+          <div class="f-ev">Evidence: Our app: Browse / Explore Feed (mentions 1, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag medium">MEDIUM</span><span class="tag M">M</span></div>
+      </div><div class="feat-row">
+        <div class="prio"><b>68</b><span>PRIORITY</span></div>
+        <div>
+          <h4>Cyclic Meal Planning Menus</h4>
+          <p>Add features to easily copy and repeat weekly menus cyclically to support recurring meal planning routines.</p>
+          <div class="f-ev">Evidence: Our app: Cyclic Meal Planning Menus (mentions 1, seen 1x runs)</div>
+        </div>
+        <div class="tag-row"><span class="tag medium">MEDIUM</span><span class="tag S">S</span></div>
+      </div>
+    </div></section>
+<footer><div class="wrap f-grid">
+      <div><b>Methodology.</b> Reviews from Google Play &amp; the App Store
+        (last 30 days, English-speaking storefronts), deduplicated and
+        analyzed per app by gemini-3.5-flash-lite with
+        history-aware prompts. Each app also gets a store snapshot cross-checked
+        between two independent parsers, and a community pass over Hacker News
+        whose quotes are machine-verified before display.</div>
+      <div><b>Persistence key.</b> A finding survives from run to run by slug. After 3
+        runs it is marked <span class="pill persistent">persistent</span> and
+        shows total weeks since first discovery. Every 6 weeks history is summarized
+        and merged to keep prompts lean; nothing is ever deleted.</div>
+      <div><b>Run stats.</b> 8 AI calls ·
+        23,711 in / 8,228 out tokens ·
+        0 retries.
+        
+        Generated 2026-09-21 23:24.</div>
+    </div></footer>
+<script>(function () {
+  'use strict';
+  var root = document.documentElement, KEY = 'appintel-theme';
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+  /* ================= theme =================
+     No saved choice -> follow the system (CSS media query does the actual
+     styling; we only keep the button label in sync and react to OS flips).
+     Saved choice wins until the user clears it (never in this UI). */
+  function saved() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+  function effective() {
+    var v = saved();
+    if (v === 'light' || v === 'dark') return v;
+    return mq.matches ? 'dark' : 'light';
+  }
+  function apply() {
+    var v = saved();
+    if (v === 'light' || v === 'dark') { root.setAttribute('data-theme', v); }
+    else { root.removeAttribute('data-theme'); }
+    var btn = document.getElementById('themeBtn');
+    if (btn) {
+      var target = effective() === 'dark' ? 'light' : 'dark';
+      var sun = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+      var moon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+      btn.innerHTML = (target === 'dark' ? moon : sun) + ' ' + target.charAt(0).toUpperCase() + target.slice(1);
+      btn.setAttribute('aria-label', 'Switch to ' + target + ' mode');
+    }
+  }
+  window.cycleTheme = function () {
+    var next = effective() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    apply();
+  };
+  if (mq.addEventListener) {
+    mq.addEventListener('change', function () {
+      if (!saved()) { apply(); }        /* keep following the OS */
+    });
+  }
+  apply();
+})();
+</script>
+</body>
+</html>
